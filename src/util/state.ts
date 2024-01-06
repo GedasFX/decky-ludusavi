@@ -2,13 +2,15 @@ import { ServerAPI } from "decky-frontend-lib";
 import { useEffect, useState } from "react";
 
 type State = {
-  auto_backup_enabled: string
+  ludisavi_version: string;
+  auto_backup_enabled: string,
 };
 
 class AppState {
   private _subscribers: { id: number; callback: (e: State) => void }[] = [];
 
   private _currentState: State = {
+    ludisavi_version: "LOADING...",
     auto_backup_enabled: "false"
   };
 
@@ -24,12 +26,28 @@ class AppState {
 
   public async initialize(serverApi: ServerAPI) {
     this._serverApi = serverApi;
+    await Promise.all([this.initializeConfig(), this.initializeVersion()])
+  }
 
-    const data = await serverApi.callPluginMethod<{}, string[][]>("get_config", {});
+  private async initializeConfig() {
+    const data = await this._serverApi.callPluginMethod<{}, string[][]>("get_api", {});
     if (data.success) {
       data.result.forEach((e) => this.setState(e[0] as keyof State, e[1]));
     } else {
       console.error(data);
+    }
+  }
+
+  private async initializeVersion() {
+    const version = await getServerApi().callPluginMethod<{}, { bin_path?: string, version: string }>("get_ludusavi_version", {});
+    if (version.success) {
+      if (version.result.version) {
+        this.setState("ludisavi_version", version.result.version);
+      } else {
+        this.setState("ludisavi_version", "MISSING_BINARY");
+      }
+    } else {
+      this.setState("ludisavi_version", "ERROR");
     }
   }
 
@@ -68,7 +86,6 @@ export const useAppState = () => {
 
   useEffect(() => {
     const id = appState.subscribe((e) => {
-      console.log("Rendering:", e);
       setState(e);
     });
     return () => {

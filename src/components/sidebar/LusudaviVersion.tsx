@@ -1,12 +1,7 @@
-import { useEffect, useState } from "react";
-import { getLudusaviVersion } from "../../util/apiClient";
+import { useAppState } from "../../util/state";
 
 export default function LudusaviVersion() {
-    const [version, setVersion] = useState<string>("N/A");
+    const state = useAppState();
 
-    useEffect(() => {
-        getLudusaviVersion().then(v => setVersion(v));
-    }, []);
-
-    return <span>{version}</span>;
+    return <span>{state.ludisavi_version}</span>;
 }

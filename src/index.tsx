@@ -41,7 +41,7 @@ const Content: VFC<{ serverAPI: ServerAPI }> = ({serverAPI}) => {
   // };
 
   return (
-    <PanelSection title="Panel Section">
+    <PanelSection title="Version">
       <PanelSectionRow>
         <LudusaviVersion />
       </PanelSectionRow>
