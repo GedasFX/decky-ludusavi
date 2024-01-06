@@ -4,16 +4,25 @@ import os
 # For easy intellisense checkout the decky-loader code one directory up
 # or add the `decky-loader/plugin` path to `python.analysis.extraPaths` in `.vscode/settings.json`
 import decky_plugin
+from ludusavi import Ludusavi
 
+decky_plugin.logger.setLevel("DEBUG")
 
 class Plugin:
-    # A normal method. It can be called from JavaScript using call_plugin_function("method_1", argument1, argument2)
-    async def add(self, left, right):
-        return left + right
+    ludusavi: Ludusavi
 
-    # Asyncio-compatible long-running code, executed in a task when the plugin is loaded
+    # Check plugin for initialization
+    async def get_ludusavi_version(self):
+        decky_plugin.logger.debug("Calling: get_ludusavi_version")
+        decky_plugin.logger.info("Calling: get_ludusavi_version")
+        a = { "bin_path": self.ludusavi.bin_path, "version": self.ludusavi.version }
+        decky_plugin.logger.debug("%s", a)
+        return a
+
+    # Asyncio-compatible long-running code, executed in a task wh
+    # en the plugin is loaded
     async def _main(self):
-        decky_plugin.logger.info("Hello World!")
+        self.ludusavi = Ludusavi(['/var/lib/flatpak/exports/bin/com.github.mtkennerly.ludusavi', 'ludusavi', 'ludusavi.exe'])
 
     # Function called first during the unload process, utilize this to handle your plugin being removed
     async def _unload(self):

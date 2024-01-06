@@ -2,6 +2,7 @@ import {
   ButtonItem,
   definePlugin,
   DialogButton,
+  LifetimeNotification,
   Menu,
   MenuItem,
   PanelSection,
@@ -15,6 +16,8 @@ import { VFC } from "react";
 import { FaShip } from "react-icons/fa";
 
 import logo from "../assets/logo.png";
+import LudusaviVersion from "./components/sidebar/LusudaviVersion";
+import appState from "./util/state";
 
 // interface AddMethodArgs {
 //   left: number;
@@ -40,9 +43,12 @@ const Content: VFC<{ serverAPI: ServerAPI }> = ({serverAPI}) => {
   return (
     <PanelSection title="Panel Section">
       <PanelSectionRow>
+        <LudusaviVersion />
+      </PanelSectionRow>
+      <PanelSectionRow>
         <ButtonItem
           layout="below"
-          onClick={(e) =>
+          onClick={(e: Event) =>
             showContextMenu(
               <Menu label="Menu" cancelText="CAAAANCEL" onCancel={() => {}}>
                 <MenuItem onSelected={() => {}}>Item #1</MenuItem>
@@ -90,8 +96,21 @@ const DeckyPluginRouterTest: VFC = () => {
 };
 
 export default definePlugin((serverApi: ServerAPI) => {
-  serverApi.routerHook.addRoute("/decky-plugin-test", DeckyPluginRouterTest, {
-    exact: true,
+  appState.initialize(serverApi);
+  
+  const { unregister: removeGameExitListener } = SteamClient.GameSessions.RegisterForAppLifetimeNotifications((e: LifetimeNotification) => {
+    if (!appState.currentState.auto_backup_enabled)
+      return;
+
+    // On Start
+    if (e.bRunning) {
+      // serverApi.callPluginMethod("", )
+    }
+
+    // On Exit
+    else {
+
+    }
   });
 
   return {
