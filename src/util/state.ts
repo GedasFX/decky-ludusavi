@@ -8,6 +8,7 @@ type State = {
   auto_backup_enabled: string;
   auto_backup_toast_enabled: string;
   recent_games: string[];
+  auto_backup_last_game_supported: boolean;
 };
 
 class AppState {
@@ -18,8 +19,9 @@ class AppState {
     ludusavi_enabled: "false",
     ludusavi_version: "LOADING...",
     auto_backup_enabled: "false", // Persistent - string
-    auto_backup_toast_enabled: "false", // Persistent - string
+    auto_backup_toast_enabled: "true", // Persistent - string
     recent_games: [],
+    auto_backup_last_game_supported: false
   };
 
   private _serverApi: ServerAPI = null!;

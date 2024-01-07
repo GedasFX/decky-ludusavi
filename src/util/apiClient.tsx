@@ -111,7 +111,7 @@ function handleComplete(start: Date, result: LudusaviBackupResponse) {
       message += `Synced ${changes.New + changes.Different} file(s) [${(bytesChanged / 1_000_000).toFixed(2)} MB]`;
     }
 
-    if (appState.currentState.auto_backup_toast_enabled) {
+    if (appState.currentState.auto_backup_toast_enabled === "true") {
       getServerApi().toaster.toast({
         title: `Ludusavi Backup Complete - ${gameName}`,
         body: `${message}. ⌛ ${((new Date().getTime() - start.getTime()) / 1000).toFixed(2)} s.`,

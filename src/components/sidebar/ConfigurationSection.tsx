@@ -15,8 +15,7 @@ export default function ConfigurationSection() {
       </PanelSectionRow>
       <PanelSectionRow>
         <ToggleField
-          disabled={appState.auto_backup_enabled !== "true"}
-          label="Toast after auto sync"
+          label="Notify after successful sync"
           checked={appState.auto_backup_toast_enabled === "true"}
           onChange={(e) => setAppState("auto_backup_toast_enabled", e ? "true" : "false", true)}
         />

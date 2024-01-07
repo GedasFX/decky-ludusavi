@@ -33,31 +33,6 @@ class Plugin:
         decky_plugin.logger.debug("Executing: backup_game(%s)", game_name)
         self.backup_task = asyncio.create_task(self.ludusavi.backup_game_async(game_name))
 
-    async def backup_game_sync(self, game_name: str):
-        decky_plugin.logger.debug("Executing: backup_game_sync(%s)", game_name)
-        # self.ludusavi.backup_game(game_name)
-        cmd = [
-            '/var/lib/flatpak/exports/bin/com.github.mtkennerly.ludusavi',
-            'backup',
-            '--api',
-            '--force',
-            'Pokemon - Emerald Version (U)'
-        ]
-
-        try:
-            # Run the command securely
-            process = subprocess.run(cmd, check=True, capture_output=True, text=True, shell=True)
-
-            # Print the output and errors if needed
-            decky_plugin.logger.debug("STDOUT: %s", process.stdout)
-            decky_plugin.logger.debug("STDERR: %s", process.stderr)
-
-            decky_plugin.logger.debug("wat")
-
-        except subprocess.CalledProcessError as e:
-            # Handle errors, if any
-            decky_plugin.logger.debug("Error: %s", e)
-
     async def backup_game_check_finished(self):
         decky_plugin.logger.debug("Executing: backup_game_check_finished()")
         if not self.backup_task.done():

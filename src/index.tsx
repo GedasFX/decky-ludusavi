@@ -61,6 +61,7 @@ export default definePlugin((serverApi: ServerAPI) => {
       const gameName = steamGame ?? nonSteamGame;
       if (gameName && (await verifyGameSyncable(gameName))) {
         appState.pushRecentGame(gameName);
+        appState.setState("auto_backup_last_game_supported", true);
       } else {
         console.error("Ludusavi: game not suppported", gameName);
         appState.serverApi.toaster.toast({
@@ -91,8 +92,13 @@ export default definePlugin((serverApi: ServerAPI) => {
 
     // On Exit
     else {
-      if (appState.currentState.ludusavi_enabled === "true" && appState.currentState.auto_backup_enabled) {
+      if (
+        appState.currentState.ludusavi_enabled === "true" &&
+        appState.currentState.auto_backup_enabled === "true" &&
+        appState.currentState.auto_backup_last_game_supported
+      ) {
         backupGame(appState.currentState.recent_games[0]);
+        appState.setState("auto_backup_last_game_supported", false); // Reset to false to not backup
       }
     }
   });
