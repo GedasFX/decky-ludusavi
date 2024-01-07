@@ -2,16 +2,20 @@ import { ServerAPI } from "decky-frontend-lib";
 import { useEffect, useState } from "react";
 
 type State = {
-  ludisavi_version: string;
-  auto_backup_enabled: string,
+  ludusavi_enabled: string;
+  ludusavi_version: string;
+  auto_backup_enabled: string;
+  recent_games: string[];
 };
 
 class AppState {
   private _subscribers: { id: number; callback: (e: State) => void }[] = [];
 
   private _currentState: State = {
-    ludisavi_version: "LOADING...",
-    auto_backup_enabled: "false"
+    ludusavi_enabled: "false",
+    ludusavi_version: "LOADING...",
+    auto_backup_enabled: "false",
+    recent_games: [],
   };
 
   private _serverApi: ServerAPI = null!;
@@ -42,12 +46,13 @@ class AppState {
     const version = await getServerApi().callPluginMethod<{}, { bin_path?: string, version: string }>("get_ludusavi_version", {});
     if (version.success) {
       if (version.result.version) {
-        this.setState("ludisavi_version", version.result.version);
+        this.setState("ludusavi_enabled", "true");
+        this.setState("ludusavi_version", version.result.version);
       } else {
-        this.setState("ludisavi_version", "MISSING_BINARY");
+        this.setState("ludusavi_version", "MISSING");
       }
     } else {
-      this.setState("ludisavi_version", "ERROR");
+      this.setState("ludusavi_version", "ERROR");
     }
   }
 
@@ -62,6 +67,17 @@ class AppState {
 
     this._subscribers.forEach((e) => e.callback(this.currentState));
   };
+
+  public pushRecentGame = (gameName: string) => {
+    const recent = [...this.currentState.recent_games];
+
+    // Move game up in the stack
+    const index = recent.indexOf(gameName);
+    if (index > 0) recent.splice(index, 1);
+
+    this._currentState = { ...this.currentState, recent_games: [gameName, ...recent] }
+    this._subscribers.forEach((e) => e.callback(this.currentState));
+  }
 
   public subscribe = (callback: (e: State) => void) => {
     const id = new Date().getTime();

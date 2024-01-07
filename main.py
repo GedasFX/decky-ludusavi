@@ -22,6 +22,10 @@ class Plugin:
     async def set_config(self, key: str, value: str):
         decky_plugin.logger.debug("Executing: set_config(%s, %s)", key, value)
         return app_config.set_config(key, value)
+    
+    async def verify_game_exists(self, game_name: str):
+        decky_plugin.logger.debug("Executing: verify_game_exists(%s)", game_name)
+        return { "exists": self.ludusavi.check_game(game_name) }
 
 
     # Asyncio-compatible long-running code, executed in a task when the plugin is loaded

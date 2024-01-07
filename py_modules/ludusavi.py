@@ -21,11 +21,17 @@ class Ludusavi:
     def check_game(self, game_name: str):
         try:
             # Find if the game 'game_name' has support for backup.
-            output = subprocess.check_output([self.bin_path, 'find', '--api', '--backup', game_name], stderr=subprocess.STDOUT, text=True)
+            cmd = [self.bin_path, 'find', '--api', '--backup', game_name]
+            api_logger.info("Running command: %s", subprocess.list2cmdline(cmd))
+
+            output = subprocess.check_output(cmd, stderr=subprocess.STDOUT, text=True)
             data = json.loads(output)
             return data["games"][game_name] is not None
         except subprocess.CalledProcessError as e:
+            output = e.output
             return False
+        finally:
+            api_logger.debug(output)
 
     def backup_game(self, game_name: str):
         cmd = [self.bin_path, 'backup', '--api', '--force', game_name]
@@ -36,7 +42,7 @@ class Ludusavi:
         except subprocess.CalledProcessError as e:
             output = e.output
         finally:
-            api_logger.info(output)
+            api_logger.debug(output)
 
     async def backup_game_async(self, game_name: str):
         cmd = [self.bin_path, 'backup', '--api', '--force', game_name]
@@ -47,7 +53,7 @@ class Ludusavi:
 
         result = stdout.decode()
 
-        api_logger.info("Command result: %s", result)
+        api_logger.debug(result)
         return json.loads(result)
 
 
