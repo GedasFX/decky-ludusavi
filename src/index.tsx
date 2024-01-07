@@ -1,30 +1,12 @@
-import {
-  ButtonItem,
-  definePlugin,
-  DialogBody,
-  DialogButton,
-  DialogHeader,
-  LifetimeNotification,
-  Menu,
-  MenuItem,
-  ModalRoot,
-  PanelSection,
-  PanelSectionRow,
-  Router,
-  ServerAPI,
-  showContextMenu,
-  showModal,
-  SimpleModal,
-  staticClasses,
-} from "decky-frontend-lib";
+import { definePlugin, LifetimeNotification, PanelSection, PanelSectionRow, ServerAPI, staticClasses, ToggleField } from "decky-frontend-lib";
 import { VFC } from "react";
 import { FaShip } from "react-icons/fa";
 
-import logo from "../assets/logo.png";
 import LudusaviVersion from "./components/sidebar/LusudaviVersion";
 import appState from "./util/state";
 import SyncNowButton from "./components/sidebar/SyncNowButton";
-import { verifyGameSyncable } from "./util/apiClient";
+import { backupGame, verifyGameSyncable } from "./util/apiClient";
+import ConfigurationSection from "./components/sidebar/ConfigurationSection";
 
 // interface AddMethodArgs {
 //   left: number;
@@ -49,51 +31,17 @@ const Content: VFC = () => {
 
   return (
     <>
-      <PanelSection title="Version">
-        <PanelSectionRow>
-          <LudusaviVersion />
-        </PanelSectionRow>
-      </PanelSection>
       <PanelSection title="Sync">
         <PanelSectionRow>
           <SyncNowButton />
         </PanelSectionRow>
       </PanelSection>
-      <PanelSection>
+      <PanelSection title="Configuration">
+        <ConfigurationSection />
+      </PanelSection>
+      <PanelSection title="Version">
         <PanelSectionRow>
-          <ButtonItem
-            layout="below"
-            onClick={(e: Event) =>
-              showContextMenu(
-                <Menu label="Menu" cancelText="CAAAANCEL" onCancel={() => {}}>
-                  <MenuItem onSelected={() => {}}>Item #1</MenuItem>
-                  <MenuItem onSelected={() => {}}>Item #2</MenuItem>
-                  <MenuItem onSelected={() => {}}>Item #3</MenuItem>
-                </Menu>,
-                e.currentTarget ?? window
-              )
-            }
-          >
-            Server says yolo
-          </ButtonItem>
-        </PanelSectionRow>
-
-        <PanelSectionRow>
-          <div style={{ display: "flex", justifyContent: "center" }}>
-            <img src={logo} />
-          </div>
-        </PanelSectionRow>
-
-        <PanelSectionRow>
-          <ButtonItem
-            layout="below"
-            onClick={() => {
-              Router.CloseSideMenus();
-              Router.Navigate("/decky-plugin-test");
-            }}
-          >
-            Router
-          </ButtonItem>
+          <LudusaviVersion />
         </PanelSectionRow>
       </PanelSection>
     </>
@@ -104,10 +52,6 @@ export default definePlugin((serverApi: ServerAPI) => {
   appState.initialize(serverApi);
 
   const { unregister: removeGameExitListener } = SteamClient.GameSessions.RegisterForAppLifetimeNotifications(async (e: LifetimeNotification) => {
-    console.warn("Lud", e);
-
-    if (!appState.currentState.auto_backup_enabled) return;
-
     // On Start
     if (e.bRunning) {
       const x = await Promise.all([SteamClient.Apps.GetLaunchOptionsForApp(e.unAppID), SteamClient.Apps.GetShortcutData([e.unAppID])]);
@@ -118,7 +62,7 @@ export default definePlugin((serverApi: ServerAPI) => {
       if (gameName && (await verifyGameSyncable(gameName))) {
         appState.pushRecentGame(gameName);
       } else {
-        console.error("Ludusavi: game not suppported", gameName)
+        console.error("Ludusavi: game not suppported", gameName);
         appState.serverApi.toaster.toast({
           title: "Ludusavi",
           body: `Game '${gameName}' not supported. Click to learn more.`,
@@ -136,9 +80,6 @@ export default definePlugin((serverApi: ServerAPI) => {
           //     </ModalRoot>
           //   );
           // },
-          onClick: () => {
-            console.warn("awdawdawdawd")
-          },
         });
       }
 
@@ -150,6 +91,9 @@ export default definePlugin((serverApi: ServerAPI) => {
 
     // On Exit
     else {
+      if (appState.currentState.ludusavi_enabled === "true" && appState.currentState.auto_backup_enabled) {
+        backupGame(appState.currentState.recent_games[0]);
+      }
     }
   });
 

@@ -48,7 +48,12 @@ class Ludusavi:
         cmd = [self.bin_path, 'backup', '--api', '--force', game_name]
         api_logger.info("Running command: %s", subprocess.list2cmdline(cmd))
 
-        process = await asyncio.create_subprocess_exec(*cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
+        # Workaround for flatpacks
+        l_env = os.environ.copy()
+        if 'XDG_RUNTIME_DIR' not in l_env:
+            l_env['XDG_RUNTIME_DIR'] = '/run/user/1000'
+
+        process = await asyncio.create_subprocess_exec(*cmd, env=l_env, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
         stdout, _ = await process.communicate()
 
         result = stdout.decode()
@@ -70,26 +75,3 @@ class Ludusavi:
             return True
         except FileNotFoundError:
             return False
-
-
-# # Check the installation. 'or' operand checks from left to right, so that it will not check later if one was found.
-# # com.github.mtkennerly.ludusavi comes from flatpak.
-# __check_initialized('com.github.mtkennerly.ludusavi') or __check_initialized('ludusavi') or __check_initialized('ludusavi.exe')
-# LudusaviState.initialized = True
-
-# # backup_game("Pokemon Emerald")
-
-# # backup_game()
-
-# task = None
-# async def lemain():
-#     task = asyncio.get_event_loop().create_task(backup_game_async("Pokemon Emerald"))
-#     while not task.done():
-#         await asyncio.sleep(0.2)
-
-#     a = 5
-#     b = task.result()
-#     c = 5
-
-# asyncio.get_event_loop().run_until_complete(lemain())
-# asyncio.run(lemain())

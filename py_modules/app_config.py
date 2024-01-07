@@ -3,6 +3,10 @@ from pathlib import Path
 
 cfg_property_file = Path(decky_plugin.DECKY_PLUGIN_SETTINGS_DIR) / "plugin.properties"
 
+def migrate():
+    if not cfg_property_file.is_file():
+        cfg_property_file.touch()
+
 def get_config(): 
     with open(decky_plugin.DECKY_PLUGIN_SETTINGS_DIR) as f:
         lines = f.readlines()

@@ -2,9 +2,11 @@ import { ServerAPI } from "decky-frontend-lib";
 import { useEffect, useState } from "react";
 
 type State = {
+  syncing: boolean;
   ludusavi_enabled: string;
   ludusavi_version: string;
   auto_backup_enabled: string;
+  auto_backup_toast_enabled: string;
   recent_games: string[];
 };
 
@@ -12,9 +14,11 @@ class AppState {
   private _subscribers: { id: number; callback: (e: State) => void }[] = [];
 
   private _currentState: State = {
+    syncing: false,
     ludusavi_enabled: "false",
     ludusavi_version: "LOADING...",
-    auto_backup_enabled: "false",
+    auto_backup_enabled: "false", // Persistent - string
+    auto_backup_toast_enabled: "false", // Persistent - string
     recent_games: [],
   };
 
@@ -56,13 +60,16 @@ class AppState {
     }
   }
 
-  public setState = (key: keyof State, value: string, persist = false) => {
+  public setState = (key: keyof State, value: unknown, persist = false) => {
     this._currentState = { ...this.currentState, [key]: value };
 
     console.log(key, value, persist);
 
     if (persist) {
-      this.serverApi.callPluginMethod<{ key: string; value: string }, null>("set_config", { key, value }).then(e => console.log(e));
+      if (typeof value === 'string')
+        this.serverApi.callPluginMethod<{ key: string; value: string }, null>("set_config", { key, value }).then(e => console.log(e));
+      else
+        console.error("Tried to persist non-string value:", value);
     }
 
     this._subscribers.forEach((e) => e.callback(this.currentState));
@@ -73,7 +80,7 @@ class AppState {
 
     // Move game up in the stack
     const index = recent.indexOf(gameName);
-    if (index > 0) recent.splice(index, 1);
+    if (index >= 0) recent.splice(index, 1);
 
     this._currentState = { ...this.currentState, recent_games: [gameName, ...recent] }
     this._subscribers.forEach((e) => e.callback(this.currentState));
