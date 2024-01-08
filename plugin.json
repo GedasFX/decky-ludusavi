@@ -1,10 +1,10 @@
 {
   "name": "Ludusavi",
-  "author": "John Doe",
-  "flags": ["debug"],
+  "author": "GedasFX",
+  "flags": [],
   "publish": {
-    "tags": ["template", "root"],
-    "description": "Decky example plugin.",
-    "image": "https://opengraph.githubassets.com/1/SteamDeckHomebrew/PluginLoader"
+    "tags": ["ludusavi", "backup", "cloud", "sync"],
+    "description": "Ludusavi for Decky. Backup, restore, and keep multiple versions of your save files with ease! Requires Ludusavi installed on the device.",
+    "image": "https://raw.githubusercontent.com/mtkennerly/ludusavi/master/assets/icon.svg"
   }
 }

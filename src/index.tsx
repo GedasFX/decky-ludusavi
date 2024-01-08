@@ -1,4 +1,4 @@
-import { definePlugin, LifetimeNotification, PanelSection, PanelSectionRow, ServerAPI, staticClasses, ToggleField } from "decky-frontend-lib";
+import { definePlugin, LifetimeNotification, PanelSection, PanelSectionRow, ServerAPI, staticClasses } from "decky-frontend-lib";
 import { VFC } from "react";
 import { FaShip } from "react-icons/fa";
 

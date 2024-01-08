@@ -20,6 +20,7 @@ export default function ConfigurationSection() {
           onChange={(e) => setAppState("auto_backup_toast_enabled", e ? "true" : "false", true)}
         />
       </PanelSectionRow>
+      {/* TODO: ALIAS FEATURE */}
     </>
   );
 }
