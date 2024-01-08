@@ -1,14 +1,25 @@
 import { ServerAPI } from "decky-frontend-lib";
 import { useEffect, useState } from "react";
+import { updateGameConfig } from "./apiClient";
+
+export interface GameInfo {
+  name: string;
+  aliases: string[];
+
+  autosync: boolean;
+}
 
 type State = {
+  // Transient
   syncing: boolean;
-  ludusavi_enabled: string;
+  recent_games: GameInfo[];
+
+  ludusavi_enabled: boolean;
   ludusavi_version: string;
+
+  // Persistent
   auto_backup_enabled: string;
   auto_backup_toast_enabled: string;
-  recent_games: string[];
-  auto_backup_last_game_supported: boolean;
 };
 
 class AppState {
@@ -16,12 +27,11 @@ class AppState {
 
   private _currentState: State = {
     syncing: false,
-    ludusavi_enabled: "false",
+    ludusavi_enabled: false,
     ludusavi_version: "LOADING...",
     auto_backup_enabled: "false", // Persistent - string
     auto_backup_toast_enabled: "true", // Persistent - string
     recent_games: [],
-    auto_backup_last_game_supported: false
   };
 
   private _serverApi: ServerAPI = null!;
@@ -36,7 +46,7 @@ class AppState {
 
   public async initialize(serverApi: ServerAPI) {
     this._serverApi = serverApi;
-    await Promise.all([this.initializeConfig(), this.initializeVersion()])
+    await Promise.all([this.initializeConfig(), this.initializeVersion(), this.initializeGames()])
   }
 
   private async initializeConfig() {
@@ -52,13 +62,20 @@ class AppState {
     const version = await getServerApi().callPluginMethod<{}, { bin_path?: string, version: string }>("get_ludusavi_version", {});
     if (version.success) {
       if (version.result.version) {
-        this.setState("ludusavi_enabled", "true");
+        this.setState("ludusavi_enabled", true);
         this.setState("ludusavi_version", version.result.version);
       } else {
         this.setState("ludusavi_version", "MISSING");
       }
     } else {
       this.setState("ludusavi_version", "ERROR");
+    }
+  }
+
+  private async initializeGames() {
+    const games = await getServerApi().callPluginMethod<void, GameInfo[]>("get_game_config", undefined);
+    if (games.success) {
+      this.setState("recent_games", games.result);
     }
   }
 
@@ -77,14 +94,22 @@ class AppState {
     this._subscribers.forEach((e) => e.callback(this.currentState));
   };
 
-  public pushRecentGame = (gameName: string) => {
+  public pushRecentGame = async (gameName: string) => {
     const recent = [...this.currentState.recent_games];
 
     // Move game up in the stack
-    const index = recent.indexOf(gameName);
-    if (index >= 0) recent.splice(index, 1);
+    let loadedGame = recent.find(e => e.name === gameName);
+    if (loadedGame) recent.splice(recent.findIndex(e => e.name === gameName), 1);
 
-    this._currentState = { ...this.currentState, recent_games: [gameName, ...recent] }
+    if (!loadedGame) {
+      loadedGame = { name: gameName, aliases: [gameName], autosync: false }
+      getServerApi().toaster.toast({ title: "Ludusavi", body: 'New game detected. Open Ludusavi to configure.' })
+    } 
+
+    const recentGames = [loadedGame, ...recent];
+    await updateGameConfig(recentGames);
+
+    this._currentState = { ...this.currentState, recent_games: recentGames }
     this._subscribers.forEach((e) => e.callback(this.currentState));
   }
 

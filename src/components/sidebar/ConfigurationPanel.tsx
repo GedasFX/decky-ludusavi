@@ -1,11 +1,11 @@
-import { PanelSectionRow, ToggleField } from "decky-frontend-lib";
+import { PanelSection, PanelSectionRow, ToggleField } from "decky-frontend-lib";
 import { setAppState, useAppState } from "../../util/state";
 
-export default function ConfigurationSection() {
+export default function ConfigurationPanel() {
   const appState = useAppState();
 
   return (
-    <>
+    <PanelSection title="Configuration">
       <PanelSectionRow>
         <ToggleField
           label="Sync after closing a game"
@@ -21,6 +21,6 @@ export default function ConfigurationSection() {
         />
       </PanelSectionRow>
       {/* TODO: ALIAS FEATURE */}
-    </>
+    </PanelSection>
   );
 }

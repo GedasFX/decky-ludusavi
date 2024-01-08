@@ -1,5 +1,5 @@
 import { sleep } from "decky-frontend-lib";
-import appState, { getServerApi, setAppState } from "./state";
+import appState, { GameInfo, getServerApi, setAppState } from "./state";
 
 interface LudusaviBackupResponse {
   errors?: {
@@ -23,16 +23,6 @@ interface LudusaviBackupResponse {
   };
 }
 
-export async function getLudusaviVersion() {
-  const version = await getServerApi().callPluginMethod<{}, { bin_path?: string; version: string }>("get_ludusavi_version", {});
-
-  console.log("Ludusavi version", version);
-
-  if (version.success) return version.result.version;
-
-  return "N/A";
-}
-
 export async function verifyGameSyncable(gameName: string) {
   const result = await getServerApi().callPluginMethod<{ game_name: string }, { exists: boolean }>("verify_game_exists", { game_name: gameName });
   if (result.success && result.result.exists) return true;
@@ -40,13 +30,20 @@ export async function verifyGameSyncable(gameName: string) {
   return false;
 }
 
-export async function backupGame(gameName: string) {
+export async function updateGameConfig(games: GameInfo[]) {
+  await getServerApi().callPluginMethod<GameInfo[], void>("backup_game_check_finished", games);
+}
+
+export async function backupGames(gameNames: string[]) {
+  if (gameNames.length === 0)
+    return;
+
   const start = new Date();
 
   setAppState("syncing", true);
 
   // Start sync
-  await getServerApi().callPluginMethod<{ game_name: string }>("backup_game", { game_name: gameName });
+  await getServerApi().callPluginMethod<{ game_names: string[] }>("backup_game", { game_names: gameNames });
 
   while (true) {
     const status = await getServerApi().callPluginMethod<
