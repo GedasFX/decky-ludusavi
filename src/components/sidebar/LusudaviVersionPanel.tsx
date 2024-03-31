@@ -10,7 +10,7 @@ export default function LudusaviVersionPanel() {
         {!ludusavi_enabled && ludusavi_version !== "LOADING..." && (
           <div style={{ fontSize: "0.7em", marginLeft: "-1em", marginRight: "-3em" }}>
             <div>Ludusavi not found. Plugin functionality limited.</div>
-            <div>Install Ludusavi from 'Discover' in Desktop mode. If issue persists, ask for help on GitHub or the Decky Discord</div>
+            <div>Install Ludusavi from 'Discover' in Desktop mode. If issue persists, ask for help on GitHub or Discord.</div>
           </div>
         )}
       </PanelSectionRow>
