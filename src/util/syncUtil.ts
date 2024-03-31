@@ -33,7 +33,7 @@ export async function backupGames(gameNames: string[]) {
     setAppState("syncing", true);
 
     // Start sync
-    await getServerApi().callPluginMethod<{ game_names: string[] }>("backup_game", { game_names: gameNames });
+    await getServerApi().callPluginMethod<{ game_names: string[] }>("backup_games", { game_names: gameNames });
 
     while (true) {
         const status = await getServerApi().callPluginMethod<
@@ -42,7 +42,7 @@ export async function backupGames(gameNames: string[]) {
                 completed: boolean;
                 result?: LudusaviBackupResponse;
             }
-        >("backup_game_check_finished", {});
+        >("backup_games_check_finished", {});
 
         if (status.success && status.result.completed) {
             handleComplete(start, status.result.result!);

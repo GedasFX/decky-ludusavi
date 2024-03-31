@@ -74,10 +74,7 @@ class AppState {
   }
 
   private async initializeGames() {
-    const games = await getServerApi().callPluginMethod<void, GameInfo[]>("get_game_config", undefined);
-    if (games.success) {
-      this.setState("recent_games", games.result);
-    }
+    this.setState("recent_games", await getGameConfig());
   }
 
   public setState = (key: keyof State, value: unknown, persist = false) => {
@@ -105,7 +102,7 @@ class AppState {
     if (!loadedGame) {
       loadedGame = { id: appId, name: gameName, aliases: [gameName], autosync: false }
       getServerApi().toaster.toast({ title: "Ludusavi", body: 'New game detected. Open Ludusavi to configure.' })
-    } 
+    }
 
     const recentGames = [loadedGame, ...recent];
     await updateGameConfig(recentGames);
@@ -151,6 +148,15 @@ export const setAppState = appState.setState;
 export const getServerApi = () => appState.serverApi;
 
 
-async function updateGameConfig(games: GameInfo[]) {
-  await getServerApi().callPluginMethod<GameInfo[], void>("backup_game_check_finished", games);
+export async function updateGameConfig(games: GameInfo[]) {
+  return await getServerApi().callPluginMethod<string, void>("set_game_config", JSON.stringify(games));
+}
+
+export async function getGameConfig() {
+  return await getServerApi().callPluginMethod<void, string>("get_game_config", undefined).then(e => {
+    if (!e.success)
+      return [];
+
+    return JSON.parse(e.result) as GameInfo[];
+  });
 }
