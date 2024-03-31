@@ -25,7 +25,7 @@ export default definePlugin((serverApi: ServerAPI) => {
     if (e.bRunning) {
       onGameStart(e.unAppID);
     } else {
-      onGameExit();
+      onGameExit(e.unAppID);
     }
   });
 

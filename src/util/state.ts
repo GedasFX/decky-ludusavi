@@ -1,8 +1,9 @@
 import { ServerAPI } from "decky-frontend-lib";
 import { useEffect, useState } from "react";
-import { updateGameConfig } from "./apiClient";
 
 export interface GameInfo {
+  id: number;
+
   name: string;
   aliases: string[];
 
@@ -94,7 +95,7 @@ class AppState {
     this._subscribers.forEach((e) => e.callback(this.currentState));
   };
 
-  public pushRecentGame = async (gameName: string) => {
+  public pushRecentGame = async (appId: number, gameName: string) => {
     const recent = [...this.currentState.recent_games];
 
     // Move game up in the stack
@@ -102,7 +103,7 @@ class AppState {
     if (loadedGame) recent.splice(recent.findIndex(e => e.name === gameName), 1);
 
     if (!loadedGame) {
-      loadedGame = { name: gameName, aliases: [gameName], autosync: false }
+      loadedGame = { id: appId, name: gameName, aliases: [gameName], autosync: false }
       getServerApi().toaster.toast({ title: "Ludusavi", body: 'New game detected. Open Ludusavi to configure.' })
     } 
 
@@ -148,3 +149,8 @@ export const useAppState = () => {
 
 export const setAppState = appState.setState;
 export const getServerApi = () => appState.serverApi;
+
+
+async function updateGameConfig(games: GameInfo[]) {
+  await getServerApi().callPluginMethod<GameInfo[], void>("backup_game_check_finished", games);
+}

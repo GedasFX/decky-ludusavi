@@ -1,9 +1,9 @@
 import { ButtonItem, ConfirmModal, Dropdown, PanelSection, PanelSectionRow, showModal } from "decky-frontend-lib";
 import { GameInfo, useAppState } from "../../util/state";
 import { FC, VFC, useEffect, useMemo, useState } from "react";
-import { backupGames } from "../../util/apiClient";
 import DeckyStoreButton from "./DeckyStoreButton";
 import { FaSave } from "react-icons/fa";
+import { backupGames } from "../../util/syncUtil";
 
 export const SelectGameDropdown: FC<{ onSelected: (game: GameInfo) => void }> = ({ onSelected }) => {
   const { recent_games } = useAppState();
@@ -23,7 +23,7 @@ export const SelectGameDropdown: FC<{ onSelected: (game: GameInfo) => void }> = 
       return [{ label: "N/A - Open a game to add it here", data: -1 }];
     }
 
-    return recent_games.map((g, i) => ({ label: g, data: i }));
+    return recent_games.slice(0, 30).map((g, i) => ({ label: g, data: i }));
   }, [recent_games]);
 
   return <Dropdown rgOptions={data} selectedOption={selected} onChange={(e) => update(e.data)} disabled={recent_games.length === 0} />;
