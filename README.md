@@ -1,15 +1,28 @@
 # Decky - Ludusavi
 
-This plugin is a Decky adapter for the [Ludusavo](https://github.com/mtkennerly/ludusavi) project. For more information on how to use that tool, visit their GitHub page.
+This plugin is a Decky adapter for the [Ludusavi](https://github.com/mtkennerly/ludusavi) project. For more information on how to use that tool, visit their GitHub page.
 
 This plugin is similar to [decky-cloud-save](https://github.com/GedasFX/decky-cloud-save), however thisone proudly supports bi-directional sync! 
 * Note: Linux/Windows interoperability requires further testing/documentation, help is welcome.
 
 Backup and Restore your files from local storage, Dropbox, Google Drive, OneDrive, FTP, SMB, WebDAV, and other providers!
 
-## Requirements
+## Requirements / Installation
 
-To run this plugin, you MUST have Ludusavi installed seperately on your Steam Deck. You can either install a flatpak from 'Discover', or have a binary (and have it in PATH). 
+To run this plugin, you MUST have Ludusavi installed seperately on your Steam Deck. You can either install a flatpak from 'Discover', or have a binary (and have it in PATH).
+
+After you have Ludusavi installed, make sure to open it and configure it. Quick overview of what needs to be configured:
+
+* BACKUP MODE
+   * Click Preview and scan for large games. Exclude files by unchecking the checkbox form backups.
+   * Configure quantity of full & differential backups, and the format. I highly reccommend having more than one full/differential backups, so you have versioning of your saves!
+* RESTORE MODE
+   * Nothing here really, familiarize with this view, as this will be the place where you would restore your backups from
+* CUSTOM GAMES
+   * If you have games that are not PC games (e.g. emulation), you may need to add paths to the games here.
+* OTHER
+   * Cloud - Set path to Rclone (download if needed), and set up your remote. Here you can specify the folder name if needed. Here you will also find a button to pull files from remote. This button will later be added to the Decky UI (https://github.com/GedasFX/decky-ludusavi/issues/3).
+   * Backup Exclusions - If some paths need to be excluded no matter what, set them here.
 
 ## Troubleshooting
 
@@ -30,7 +43,8 @@ I recognise this Ludusavi is a complex tool to get started on. And while I tried
 
 ### Guides:
 
-* Setting up Windows/Linux sync (Wanted!)
+* Setting up Windows/Linux sync (Help Wanted! https://github.com/GedasFX/decky-ludusavi/issues/1)
+* Setting up paths in CUSTOM GAMES for emulation (Help Wanted! https://github.com/GedasFX/decky-ludusavi/issues/2)
 
 ## Acknowledgments
 
