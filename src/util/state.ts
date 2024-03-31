@@ -14,6 +14,7 @@ type State = {
   // Transient
   syncing: boolean;
   recent_games: GameInfo[];
+  current_game_id?: number;
 
   ludusavi_enabled: boolean;
   ludusavi_version: string;
@@ -146,6 +147,14 @@ export const useAppState = () => {
 
 export const setAppState = appState.setState;
 export const getServerApi = () => appState.serverApi;
+
+export const updateGameState = async (game: GameInfo) => {
+  const allGames = [...appState.currentState.recent_games];
+  allGames.splice(allGames.indexOf(game), 1, { ...game });
+      
+  setAppState("recent_games", allGames);
+  await updateGameConfig(allGames);    
+}
 
 
 export async function updateGameConfig(games: GameInfo[]) {

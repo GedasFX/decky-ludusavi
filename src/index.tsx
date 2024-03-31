@@ -7,11 +7,13 @@ import appState from "./util/state";
 import SyncPanel from "./components/sidebar/SyncPanel";
 import ConfigurationPanel from "./components/sidebar/ConfigurationPanel";
 import { onGameExit, onGameStart } from "./util/syncUtil";
+import { GameConfigurationPanel } from "./components/sidebar/GameConfigurationPanel";
 
 const Content: VFC = () => {
   return (
     <>
       <SyncPanel />
+      <GameConfigurationPanel />
       <ConfigurationPanel />
       <LudusaviVersionPanel />
     </>

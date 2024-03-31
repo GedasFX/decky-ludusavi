@@ -1,6 +1,5 @@
 import { PanelSection, PanelSectionRow, ToggleField } from "decky-frontend-lib";
 import { setAppState, useAppState } from "../../util/state";
-import { ConfigureAliasesButton } from "../other/ConfigureAliasesButton";
 
 export default function ConfigurationPanel() {
   const appState = useAppState();
@@ -20,9 +19,6 @@ export default function ConfigurationPanel() {
           checked={appState.auto_backup_toast_enabled === "true"}
           onChange={(e) => setAppState("auto_backup_toast_enabled", e ? "true" : "false", true)}
         />
-      </PanelSectionRow>
-      <PanelSectionRow>
-        <ConfigureAliasesButton />
       </PanelSectionRow>
     </PanelSection>
   );

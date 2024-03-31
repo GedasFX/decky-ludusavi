@@ -2,45 +2,39 @@ import { ButtonItem, ConfirmModal, PanelSection, TextField, showModal } from "de
 import { VFC, useState } from "react";
 import DeckyStoreButton from "./DeckyStoreButton";
 import { FaPen } from "react-icons/fa";
-import { GameInfo, updateGameConfig, useAppState } from "../../util/state";
-import { SelectGameDropdown } from "../dropdowns/SelectGameDropdown";
+import { GameInfo, updateGameState } from "../../util/state";
 
 const AliasConfigurator: VFC<{ aliases: string[]; setAliases: (aliases: string[]) => void }> = ({ aliases, setAliases }) => {
+  const [str, setstr] = useState(aliases.join(","));
+
   return (
     // This bit of code is a bit rushed, make this prettier in a later version.
-    <PanelSection title="Current Aliases for this game (seperated by ,):">
-      <TextField value={aliases.join(",")} onBlur={(e) => setAliases(e.target.value.split(",").map((e) => e.trim()))} />
+    <PanelSection title="Name of the game in Ludusavi:">
+      <TextField value={str} onChange={(e) => setstr(e.target.value)} onBlur={() => setAliases([str])} />
     </PanelSection>
   );
 };
 
-const ConfigureAliasesModal: VFC<{ closeModal?: () => void }> = ({ closeModal }) => {
-  const { recent_games } = useAppState();
-  const [selectedGame, setSelectedGame] = useState<GameInfo>();
-
-  const [aliases, setAliases] = useState(selectedGame?.aliases);
+const ConfigureAliasesModal: VFC<{ game: GameInfo; closeModal?: () => void }> = ({ game, closeModal }) => {
+  const [aliases, setAliases] = useState(game.aliases);
 
   return (
     <ConfirmModal
-      strTitle="Configure Game Aliases"
+      strTitle="Configure Game Name"
       onOK={() => {
-        const gamesCopy = [...recent_games];
-        gamesCopy.splice(gamesCopy.indexOf(selectedGame!), 1, { ...selectedGame!, aliases: aliases! });
-        updateGameConfig(gamesCopy);
+        updateGameState({ ...game!, aliases: aliases });
       }}
-      bOKDisabled={!selectedGame}
       closeModal={closeModal}
     >
-      {/* <SelectGameDropdown onSelected={setSelectedGame} /> */}
-      {aliases ? <AliasConfigurator aliases={aliases} setAliases={setAliases} /> : null}
+      <AliasConfigurator aliases={aliases} setAliases={setAliases} />
     </ConfirmModal>
   );
 };
 
-export const ConfigureAliasesButton: VFC = () => {
+export const ConfigureAliasesButton: VFC<{ game: GameInfo }> = ({ game }) => {
   return (
-    <ButtonItem layout="below" onClick={() => showModal(<ConfigureAliasesModal />)}>
-      <DeckyStoreButton icon={<FaPen />}>Configure Aliases</DeckyStoreButton>
+    <ButtonItem layout="below" onClick={() => showModal(<ConfigureAliasesModal game={game} />)}>
+      <DeckyStoreButton icon={<FaPen />}>Set Custom Game Name</DeckyStoreButton>
     </ButtonItem>
   );
 };

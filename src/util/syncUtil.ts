@@ -11,6 +11,8 @@ export const onGameStart = async (appId: number) => {
     } else {
         console.error("Ludusavi: game not suppported", gameName);
     }
+
+    appState.setState("current_game_id", appId);
 }
 
 export const onGameExit = async (appId: number) => {
@@ -19,6 +21,8 @@ export const onGameExit = async (appId: number) => {
     if (appState.currentState.ludusavi_enabled && game?.autosync) {
         backupGames(game.aliases);
     }
+
+    appState.setState("current_game_id", undefined);
 }
 
 
