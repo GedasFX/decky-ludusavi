@@ -3,6 +3,7 @@ import { getServerApi } from "./state";
 export interface LudusaviBackupResponse {
   errors?: {
     cloudConflict: {};
+    unknownGames: string[];
   };
   overall: {
     processedBytes: number;

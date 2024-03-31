@@ -8,14 +8,14 @@ export default function ConfigurationPanel() {
     <PanelSection title="Configuration">
       <PanelSectionRow>
         <ToggleField
-          label="Sync after closing a game"
+          label="Autosync Enabled"
           checked={appState.auto_backup_enabled === "true"}
           onChange={(e) => setAppState("auto_backup_enabled", e ? "true" : "false", true)}
         />
       </PanelSectionRow>
       <PanelSectionRow>
         <ToggleField
-          label="Notify after successful sync"
+          label="Notifications Enabled"
           checked={appState.auto_backup_toast_enabled === "true"}
           onChange={(e) => setAppState("auto_backup_toast_enabled", e ? "true" : "false", true)}
         />
