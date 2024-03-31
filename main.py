@@ -46,7 +46,7 @@ class Plugin:
 
     async def get_game_config(self):
         decky_plugin.logger.debug("Executing: get_game_config()")
-        game_config.get_config()
+        return game_config.get_config()
 
     async def set_game_config(self, cfg: str):
         decky_plugin.logger.debug("Executing: set_game_config(cfg)")
@@ -63,3 +63,4 @@ class Plugin:
     # Migrations that should be performed before entering `_main()`.
     async def _migration(self):
         app_config.migrate()
+        game_config.migrate()

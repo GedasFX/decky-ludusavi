@@ -8,7 +8,6 @@ export const onGameStart = async (appId: number) => {
 
     if (gameName) {
         appState.pushRecentGame(appId, gameName);
-
     } else {
         console.error("Ludusavi: game not suppported", gameName);
     }

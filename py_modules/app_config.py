@@ -8,7 +8,7 @@ def migrate():
         cfg_property_file.touch()
 
 def get_config(): 
-    with open(decky_plugin.DECKY_PLUGIN_SETTINGS_DIR) as f:
+    with open(cfg_property_file) as f:
         lines = f.readlines()
         lines = list(map(lambda x: x.strip().split('='), lines))
         return lines

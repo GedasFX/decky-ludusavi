@@ -31,8 +31,8 @@ const ConfigureAliasesModal: VFC<{ closeModal?: () => void }> = ({ closeModal })
       bOKDisabled={!selectedGame}
       closeModal={closeModal}
     >
-      <SelectGameDropdown onSelected={setSelectedGame} />
-      {aliases && <AliasConfigurator aliases={aliases} setAliases={setAliases} />}
+      {/* <SelectGameDropdown onSelected={setSelectedGame} /> */}
+      {aliases ? <AliasConfigurator aliases={aliases} setAliases={setAliases} /> : null}
     </ConfirmModal>
   );
 };

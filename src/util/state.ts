@@ -51,7 +51,7 @@ class AppState {
   }
 
   private async initializeConfig() {
-    const data = await this._serverApi.callPluginMethod<{}, string[][]>("get_api", {});
+    const data = await this._serverApi.callPluginMethod<{}, string[][]>("get_config", {});
     if (data.success) {
       data.result.forEach((e) => this.setState(e[0] as keyof State, e[1]));
     } else {
@@ -149,12 +149,18 @@ export const getServerApi = () => appState.serverApi;
 
 
 export async function updateGameConfig(games: GameInfo[]) {
-  return await getServerApi().callPluginMethod<string, void>("set_game_config", JSON.stringify(games));
+  return await getServerApi().callPluginMethod<{ cfg: string }, void>("set_game_config", { cfg: JSON.stringify(games) }).then(e => {
+    if (!e.success)
+      console.error(e.result);
+  });
 }
 
 export async function getGameConfig() {
-  return await getServerApi().callPluginMethod<void, string>("get_game_config", undefined).then(e => {
+  return await getServerApi().callPluginMethod<{}, string>("get_game_config", {}).then(e => {
     if (!e.success)
+      console.error(e.result);
+
+    if (!e.success || !e.result)
       return [];
 
     return JSON.parse(e.result) as GameInfo[];
