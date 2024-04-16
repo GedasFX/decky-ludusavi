@@ -8,7 +8,7 @@ export default function ConfigurationPanel() {
     <PanelSection title="Configuration">
       <PanelSectionRow>
         <ToggleField
-          label="Autosync Enabled"
+          label="Auto-Sync Enabled"
           checked={appState.auto_backup_enabled === "true"}
           onChange={(e) => setAppState("auto_backup_enabled", e ? "true" : "false", true)}
         />

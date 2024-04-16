@@ -150,7 +150,7 @@ export const getServerApi = () => appState.serverApi;
 
 export const updateGameState = async (game: GameInfo) => {
   const allGames = [...appState.currentState.recent_games];
-  allGames.splice(allGames.indexOf(game), 1, { ...game });
+  allGames.splice(allGames.map(a => a.id).indexOf(game.id), 1, { ...game });
       
   setAppState("recent_games", allGames);
   await updateGameConfig(allGames);    
