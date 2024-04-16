@@ -8,18 +8,21 @@ export const onGameStart = async (appId: number) => {
 
     if (gameName) {
         appState.pushRecentGame(appId, gameName);
-
     } else {
         console.error("Ludusavi: game not suppported", gameName);
     }
+
+    appState.setState("current_game_id", appId);
 }
 
 export const onGameExit = async (appId: number) => {
     const game = appState.currentState.recent_games.find(g => g.id === appId);
 
-    if (appState.currentState.ludusavi_enabled && game?.autosync) {
+    if (appState.currentState.ludusavi_enabled && appState.currentState.auto_backup_enabled && game?.autosync) {
         backupGames(game.aliases);
     }
+
+    appState.setState("current_game_id", undefined);
 }
 
 
@@ -33,7 +36,10 @@ export async function backupGames(gameNames: string[]) {
     setAppState("syncing", true);
 
     // Start sync
-    await getServerApi().callPluginMethod<{ game_names: string[] }>("backup_game", { game_names: gameNames });
+    await getServerApi().callPluginMethod<{ game_name: string }>("backup_game", { game_name: gameNames[0] }).then(e => {
+        if (!e.success) console.error(e.result);
+        return e;
+    });
 
     while (true) {
         const status = await getServerApi().callPluginMethod<
@@ -51,6 +57,7 @@ export async function backupGames(gameNames: string[]) {
 
         if (!status.success) {
             getServerApi().toaster.toast({ title: "Ludusavi", body: "An error occured while backing up. Check logs." });
+            console.error(status.result);
             break;
         }
 
@@ -63,8 +70,14 @@ export async function backupGames(gameNames: string[]) {
 function handleComplete(start: Date, result: LudusaviBackupResponse) {
     if (result.errors) {
         if (result.errors.cloudConflict) {
-            getServerApi().toaster.toast({ title: "Ludusavi", body: "⚠️ Files out of sync with cloud." });
+            getServerApi().toaster.toast({ title: "⚠️ Ludusavi: Cloud Conflict", body: "Files out of sync with cloud." });
         }
+        if (result.errors.unknownGames) {
+            getServerApi().toaster.toast({ title: "⚠️ Ludusavi: Unknown Game", body: result.errors.unknownGames[0] })
+        }
+
+        console.error(result.errors)
+        return;
     }
 
     Object.keys(result.games).forEach((gameName) => {

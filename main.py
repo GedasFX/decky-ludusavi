@@ -1,6 +1,8 @@
 import asyncio
+import json
 import subprocess
 import app_config
+import game_config
 import decky_plugin
 from ludusavi import Ludusavi
 
@@ -42,6 +44,14 @@ class Plugin:
         self.backup_task = None
         return result
 
+    async def get_game_config(self):
+        decky_plugin.logger.debug("Executing: get_game_config()")
+        return game_config.get_config()
+
+    async def set_game_config(self, cfg: str):
+        decky_plugin.logger.debug("Executing: set_game_config(cfg)")
+        game_config.set_config(cfg)
+
     # Asyncio-compatible long-running code, executed in a task when the plugin is loaded
     async def _main(self):
         self.ludusavi = Ludusavi(['/var/lib/flatpak/exports/bin/com.github.mtkennerly.ludusavi', 'ludusavi', 'ludusavi.exe'])
@@ -53,3 +63,4 @@ class Plugin:
     # Migrations that should be performed before entering `_main()`.
     async def _migration(self):
         app_config.migrate()
+        game_config.migrate()

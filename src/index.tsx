@@ -1,17 +1,19 @@
 import { definePlugin, LifetimeNotification, ServerAPI, staticClasses } from "decky-frontend-lib";
 import { VFC } from "react";
-import { FaShip } from "react-icons/fa";
+import { LuDatabaseBackup } from "react-icons/lu";
 
 import LudusaviVersionPanel from "./components/sidebar/LusudaviVersionPanel";
 import appState from "./util/state";
 import SyncPanel from "./components/sidebar/SyncPanel";
 import ConfigurationPanel from "./components/sidebar/ConfigurationPanel";
 import { onGameExit, onGameStart } from "./util/syncUtil";
+import { GameConfigurationPanel } from "./components/sidebar/GameConfigurationPanel";
 
 const Content: VFC = () => {
   return (
     <>
       <SyncPanel />
+      <GameConfigurationPanel />
       <ConfigurationPanel />
       <LudusaviVersionPanel />
     </>
@@ -30,9 +32,9 @@ export default definePlugin((serverApi: ServerAPI) => {
   });
 
   return {
-    title: <div className={staticClasses.Title}>Example Plugin</div>,
+    title: <div className={staticClasses.Title}>Ludusavi</div>,
     content: <Content />,
-    icon: <FaShip />,
+    icon: <LuDatabaseBackup />,
     onDismount() {
       removeGameExitListener();
     },

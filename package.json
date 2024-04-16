@@ -1,6 +1,6 @@
 {
   "name": "decky-ludusavi",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Ludusavi for Decky. Backup, restore, and keep multiple versions of your save files with ease! Requires Ludusavi installed on the device.",
   "scripts": {
     "build": "shx rm -rf dist && rollup -c",
