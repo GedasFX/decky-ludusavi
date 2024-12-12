@@ -3,7 +3,7 @@ import os
 import subprocess
 import json
 import decky_plugin
-from ludisavi_api_logger import api_logger
+
 
 class Ludusavi:
     bin_path: str = None
@@ -22,7 +22,7 @@ class Ludusavi:
         try:
             # Find if the game 'game_name' has support for backup.
             cmd = [self.bin_path, 'find', '--api', '--backup', game_name]
-            api_logger.info("Running command: %s", subprocess.list2cmdline(cmd))
+            decky_plugin.logger.info("Running command: %s", subprocess.list2cmdline(cmd))
 
             output = subprocess.check_output(cmd, stderr=subprocess.STDOUT, text=True)
             data = json.loads(output)
@@ -31,22 +31,22 @@ class Ludusavi:
             output = e.output
             return False
         finally:
-            api_logger.debug(output)
+            decky_plugin.logger.debug(output)
 
     def backup_game(self, game_name: str):
         cmd = [self.bin_path, 'backup', '--api', '--force', game_name]
-        api_logger.info("Running command: %s", subprocess.list2cmdline(cmd))
+        decky_plugin.logger.info("Running command: %s", subprocess.list2cmdline(cmd))
 
         try:
             output = subprocess.check_output(cmd, stderr=subprocess.STDOUT, text=True)
         except subprocess.CalledProcessError as e:
             output = e.output
         finally:
-            api_logger.debug(output)
+            decky_plugin.logger.debug(output)
 
     async def backup_game_async(self, game_name: str):
         cmd = [self.bin_path, 'backup', '--api', '--force', game_name]
-        api_logger.info("Running command: %s", subprocess.list2cmdline(cmd))
+        decky_plugin.logger.info("Running command: %s", subprocess.list2cmdline(cmd))
 
         # Workaround for flatpacks
         l_env = os.environ.copy()
@@ -58,7 +58,7 @@ class Ludusavi:
 
         result = stdout.decode()
 
-        api_logger.debug(result)
+        decky_plugin.logger.debug(result)
         return json.loads(result)
 
 
