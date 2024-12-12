@@ -64,6 +64,9 @@ class Ludusavi:
 
     def _check_initialized(self, bin_path: str) -> bool:
         try:
+            if(bin_path == '/var/lib/flatpak/exports/bin/com.github.mtkennerly.ludusavi'):
+                bin_path = 'flatpak run com.github.mtkennerly.ludusavi'
+                
             decky_plugin.logger.debug("Trying binary: %s", bin_path)
             
             output = subprocess.check_output([bin_path, '--version'], stderr=subprocess.STDOUT, text=True)
