@@ -13,7 +13,7 @@ class Ludusavi:
     Env: dict = None
 
     def __init__(self, bin_paths: list[str]):
-        self.SetEnv
+        self.SetEnv()
         for path in bin_paths:
             if self._check_initialized(path):
                 break
