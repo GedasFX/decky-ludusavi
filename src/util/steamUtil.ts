@@ -1,8 +1,14 @@
+declare const appStore : any;
 export const resolveGameName = async (appId: number) => {
-    const x = await Promise.all([SteamClient.Apps.GetLaunchOptionsForApp(appId), SteamClient.Apps.GetShortcutData([appId])]);
-
-    const steamGameName = x[0][0]?.strGameName;
-    const nonSteamGameName = x[1][0]?.data?.strAppName;
-
+    
+    
+    const [launchOptions, appOverview] = await Promise.all([
+        SteamClient.Apps.GetLaunchOptionsForApp(appId),
+        appStore.GetAppOverviewByAppID(appId)
+    ]);
+    
+    const steamGameName = launchOptions?.strGameName;
+    const nonSteamGameName = appOverview?.display_name;
+    
     return steamGameName ?? nonSteamGameName;
 }
