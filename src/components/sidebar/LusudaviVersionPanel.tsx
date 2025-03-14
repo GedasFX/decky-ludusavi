@@ -1,4 +1,4 @@
-import { PanelSection, PanelSectionRow } from "decky-frontend-lib";
+import { PanelSection, PanelSectionRow } from "@decky/ui";
 import { useAppState } from "../../util/state";
 
 export default function LudusaviVersionPanel() {
