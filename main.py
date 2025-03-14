@@ -17,6 +17,7 @@ class Plugin:
     # Check plugin for initialization
     async def get_ludusavi_version(self):
         decky_plugin.logger.debug("Executing: get_ludusavi_version()")
+        decky_plugin.logger.debug("bin_path "+  self.ludusavi.bin_path)
         return { "bin_path": self.ludusavi.bin_path, "version": self.ludusavi.version }
     
     async def get_config(self):
@@ -38,11 +39,19 @@ class Plugin:
     async def backup_game_check_finished(self):
         decky_plugin.logger.debug("Executing: backup_game_check_finished()")
         if not self.backup_task.done():
+            decky_plugin.logger.debug("Backup task still running")
             return { "completed": False }
-        
-        result = { "completed": True, "result": self.backup_task.result() }
-        self.backup_task = None
-        return result
+        if self.backup_task is None:
+            decky_plugin.logger.error("No backup task found!")
+            return { "completed": False }
+        try:
+            result = { "completed": True, "result": self.backup_task.result() }
+            decky_plugin.logger.debug("Backup task completed")
+            self.backup_task = None
+            return result
+        except Exception as e:
+                decky_plugin.logger.error("Error in backup task: %s", str(e))
+                return { "completed": True, "result": None }
 
     async def get_game_config(self):
         decky_plugin.logger.debug("Executing: get_game_config()")

@@ -1,6 +1,5 @@
 from pathlib import Path
 import decky_plugin
-
 cfg_games_file = Path(decky_plugin.DECKY_PLUGIN_SETTINGS_DIR) / "games.json"
 
 def migrate():
