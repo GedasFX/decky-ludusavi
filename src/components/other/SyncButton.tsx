@@ -1,36 +1,18 @@
-import { ButtonItem, ConfirmModal, showModal } from "decky-frontend-lib";
-import { VFC, useState } from "react";
+import { ButtonItem } from "@decky/ui";
+import { FC } from "react";
 import DeckyStoreButton from "./DeckyStoreButton";
 import { FaSave } from "react-icons/fa";
-import { GameInfo, useAppState } from "../../util/state";
-import { backupGames } from "../../util/syncUtil";
-import { SelectGameDropdown } from "../dropdowns/SelectGameDropdown";
+import { useAppState } from "../../util/state";
+import { backupGame } from "../../util/syncUtil";
 
-const SyncConfirmationModal: VFC<{ closeModal?: () => void }> = ({ closeModal }) => {
-  const [selectedGame, setSelectedGame] = useState<GameInfo>();
-
-  return (
-    <ConfirmModal
-      strTitle="Select recently played game"
-      onOK={() => {
-        backupGames(selectedGame?.aliases ?? []);
-      }}
-      bOKDisabled={!selectedGame}
-      closeModal={closeModal}
-    >
-      <SelectGameDropdown onSelected={setSelectedGame} />
-    </ConfirmModal>
-  );
-};
-
-export const SyncButton: VFC = () => {
+export const SyncButton: FC<{ alias: string }> = ({ alias }) => {
   const { ludusavi_enabled, syncing } = useAppState();
 
   return (
-    <ButtonItem layout="below" disabled={!ludusavi_enabled || syncing} onClick={() => showModal(<SyncConfirmationModal />)}>
+    <ButtonItem layout="below" disabled={!ludusavi_enabled || syncing} onClick={() => backupGame(alias)}>
       <style>
         {`
-    .dcs-rotate {
+    .dls-rotate {
       animation: dcsrotate 1s infinite cubic-bezier(0.46, 0.03, 0.52, 0.96);
     }
   
@@ -45,7 +27,7 @@ export const SyncButton: VFC = () => {
     }
   `}
       </style>
-      <DeckyStoreButton icon={<FaSave className={syncing ? "dcs-rotate" : ""} />}>Sync Now</DeckyStoreButton>
+      <DeckyStoreButton icon={<FaSave className={syncing ? "dls-rotate" : ""} />}>Sync Now</DeckyStoreButton>
     </ButtonItem>
   );
 };

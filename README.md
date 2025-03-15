@@ -2,7 +2,7 @@
 
 This plugin is a Decky adapter for the [Ludusavi](https://github.com/mtkennerly/ludusavi) project. For more information on how to use that tool, visit their GitHub page.
 
-This plugin is similar to [decky-cloud-save](https://github.com/GedasFX/decky-cloud-save), however thisone proudly supports bi-directional sync! 
+This plugin is similar to [decky-cloud-save](https://github.com/GedasFX/decky-cloud-save), however this one proudly supports bi-directional sync! 
 * Note: Linux/Windows interoperability requires further testing/documentation, help is welcome.
 
 Backup and Restore your files from local storage, Dropbox, Google Drive, OneDrive, FTP, SMB, WebDAV, and other providers!

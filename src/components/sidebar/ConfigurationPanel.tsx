@@ -1,23 +1,23 @@
-import { PanelSection, PanelSectionRow, ToggleField } from "decky-frontend-lib";
-import { setAppState, useAppState } from "../../util/state";
+import { PanelSection, PanelSectionRow, ToggleField } from "@decky/ui";
+import { PersistentState, setAppState, useAppState } from "../../util/state";
+import { setConfig } from "../../util/backend";
+import { useCallback } from "react";
 
 export default function ConfigurationPanel() {
   const appState = useAppState();
 
+  const handleConfigChange = useCallback((key: keyof PersistentState, value: boolean): void => {
+    setAppState(key, value);
+    setConfig(key, value);
+  }, []);
+
   return (
-    <PanelSection title="Configuration">
+    <PanelSection title="Global Config">
       <PanelSectionRow>
         <ToggleField
           label="Auto-Sync Enabled"
-          checked={appState.auto_backup_enabled === "true"}
-          onChange={(e) => setAppState("auto_backup_enabled", e ? "true" : "false", true)}
-        />
-      </PanelSectionRow>
-      <PanelSectionRow>
-        <ToggleField
-          label="Notifications Enabled"
-          checked={appState.auto_backup_toast_enabled === "true"}
-          onChange={(e) => setAppState("auto_backup_toast_enabled", e ? "true" : "false", true)}
+          checked={appState.auto_backup_enabled}
+          onChange={e => handleConfigChange("auto_backup_enabled", e)}
         />
       </PanelSectionRow>
     </PanelSection>

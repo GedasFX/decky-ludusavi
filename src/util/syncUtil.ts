@@ -1,79 +1,79 @@
-import { sleep } from "decky-frontend-lib";
 import { LudusaviBackupResponse } from "./apiClient";
-import appState, { getServerApi, setAppState } from "./state";
+import appState, { setAppState } from "./state";
 import { resolveGameName } from "./steamUtil";
+import { addEventListener, removeEventListener, toaster } from "@decky/api";
+import { getGameConfig, startBackup } from "./backend";
 
 export const onGameStart = async (appId: number) => {
     const gameName = await resolveGameName(appId);
 
     if (gameName) {
-        appState.pushRecentGame(appId, gameName);
+        appState.pushRecentGame(gameName);
     } else {
-        console.error("Ludusavi: game not suppported", gameName);
+        console.error("Ludusavi: game not supported", gameName);
     }
-
-    appState.setState("current_game_id", appId);
 }
 
 export const onGameExit = async (appId: number) => {
-    const game = appState.currentState.recent_games.find(g => g.id === appId);
+    if (appState.currentState.ludusavi_enabled && appState.currentState.auto_backup_enabled) {
+        const gameName = await resolveGameName(appId);
+        const game = await getGameConfig(gameName);
 
-    if (appState.currentState.ludusavi_enabled && appState.currentState.auto_backup_enabled && game?.autosync) {
-        backupGames(game.aliases);
+        if (game.autoSync) {
+            await backupGame(game.alias);
+        }
     }
-
-    appState.setState("current_game_id", undefined);
 }
 
 
+export async function backupGame(gameName: string) {
+    try {
+        const start = new Date();
+        handleComplete(start, await backup(gameName));
+    } catch (e) {
+        toaster.toast({ title: "⛔ Ludusavi: Error", body: "An error occurred while backing up. Check logs." });
+        console.error(e);
+    }
+}
 
-export async function backupGames(gameNames: string[]) {
-    if (gameNames.length === 0)
-        return;
-
-    const start = new Date();
+async function backup(gameName: string) {
+    if (appState.currentState.syncing) {
+        return Promise.reject('Sync in Progress');
+    }
 
     setAppState("syncing", true);
 
-    // Start sync
-    await getServerApi().callPluginMethod<{ game_name: string }>("backup_game", { game_name: gameNames[0] }).then(e => {
-        if (!e.success) console.error(e.result);
-        return e;
+    return new Promise<LudusaviBackupResponse>((resolve, reject) => {
+        const listener = (r: LudusaviBackupResponse) => {
+            removeEventListener("backup_game_complete", listener);
+            setAppState("syncing", false);
+            resolve(r);
+        };
+
+        addEventListener("backup_game_complete", listener);
+
+        startBackup(gameName).catch((error) => {
+            removeEventListener("backup_game_complete", listener);
+            setAppState("syncing", false);
+            reject(error);
+        });
     });
-
-    while (true) {
-        const status = await getServerApi().callPluginMethod<
-            {},
-            {
-                completed: boolean;
-                result?: LudusaviBackupResponse;
-            }
-        >("backup_game_check_finished", {});
-
-        if (status.success && status.result.completed) {
-            handleComplete(start, status.result.result!);
-            break;
-        }
-
-        if (!status.success) {
-            getServerApi().toaster.toast({ title: "Ludusavi", body: "An error occured while backing up. Check logs." });
-            console.error(status.result);
-            break;
-        }
-
-        await sleep(360);
-    }
-
-    setAppState("syncing", false);
 }
 
 function handleComplete(start: Date, result: LudusaviBackupResponse) {
+    console.error(result)
     if (result.errors) {
         if (result.errors.cloudConflict) {
-            getServerApi().toaster.toast({ title: "⚠️ Ludusavi: Cloud Conflict", body: "Files out of sync with cloud." });
+            toaster.toast({ title: "⚠️ Ludusavi: Cloud Conflict", body: "Files out of sync with cloud." });
+        }
+        if (result.errors.cloudSyncFailed) {
+            toaster.toast({ title: "⚠️ Ludusavi: Cloud Sync Issue", body: "Unable to synchronize with cloud." })
         }
         if (result.errors.unknownGames) {
-            getServerApi().toaster.toast({ title: "⚠️ Ludusavi: Unknown Game", body: result.errors.unknownGames[0] })
+            toaster.toast({ title: "⛔ Ludusavi: Unknown Game", body: result.errors.unknownGames[0] })
+        }
+        if (result.errors.pluginError) {
+            toaster.toast({ title: "⛔ Ludusavi: Plugin Error", body: result.errors.pluginError })
         }
 
         console.error(result.errors)
@@ -111,11 +111,9 @@ function handleComplete(start: Date, result: LudusaviBackupResponse) {
             message += `Synced ${changes.New + changes.Different} file(s) [${(bytesChanged / 1_000_000).toFixed(2)} MB]`;
         }
 
-        if (appState.currentState.auto_backup_toast_enabled === "true") {
-            getServerApi().toaster.toast({
-                title: `Ludusavi Backup Complete - ${gameName}`,
-                body: `${message}. ⌛ ${((new Date().getTime() - start.getTime()) / 1000).toFixed(2)} s.`,
-            });
-        }
+        toaster.toast({
+            title: `Ludusavi Backup Complete - ${gameName}`,
+            body: `${message}. ⌛ ${((new Date().getTime() - start.getTime()) / 1000).toFixed(2)} s.`,
+        });
     });
 }

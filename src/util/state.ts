@@ -1,28 +1,31 @@
-import { ServerAPI } from "decky-frontend-lib";
 import { useEffect, useState } from "react";
+import { getConfig, getLudusaviVersion, setConfig, setGameConfig } from "./backend";
+import { toaster } from "@decky/api";
 
 export interface GameInfo {
-  id: number;
-
   name: string;
-  aliases: string[];
+  alias: string;
 
-  autosync: boolean;
+  autoSync: boolean;
 }
 
-type State = {
+export type PersistentState = {
+  auto_backup_enabled: boolean;
+
+  recent_games: string[];
+}
+
+export type State = {
   // Transient
   syncing: boolean;
-  recent_games: GameInfo[];
-  current_game_id?: number;
 
   ludusavi_enabled: boolean;
   ludusavi_version: string;
 
-  // Persistent
-  auto_backup_enabled: string;
-  auto_backup_toast_enabled: string;
-};
+  game_info?: GameInfo;
+
+  recent_games_selected?: string; // While its local state, dropdown gets unmounted when popup appears, so needs to be global state
+} & PersistentState;
 
 class AppState {
   private _subscribers: { id: number; callback: (e: State) => void }[] = [];
@@ -31,85 +34,64 @@ class AppState {
     syncing: false,
     ludusavi_enabled: false,
     ludusavi_version: "LOADING...",
-    auto_backup_enabled: "false", // Persistent - string
-    auto_backup_toast_enabled: "true", // Persistent - string
+    auto_backup_enabled: false,
     recent_games: [],
   };
-
-  private _serverApi: ServerAPI = null!;
 
   public get currentState() {
     return this._currentState;
   }
 
-  public get serverApi() {
-    return this._serverApi;
-  }
-
-  public async initialize(serverApi: ServerAPI) {
-    this._serverApi = serverApi;
+  public async initialize() {
     await Promise.all([this.initializeConfig(), this.initializeVersion(), this.initializeGames()])
   }
 
   private async initializeConfig() {
-    const data = await this._serverApi.callPluginMethod<{}, string[][]>("get_config", {});
-    if (data.success) {
-      data.result.forEach((e) => this.setState(e[0] as keyof State, e[1]));
-    } else {
-      console.error(data);
-    }
+    this.setState("auto_backup_enabled", await getConfig("auto_backup_enabled"));
   }
 
   private async initializeVersion() {
-    const version = await getServerApi().callPluginMethod<{}, { bin_path?: string, version: string }>("get_ludusavi_version", {});
-    if (version.success) {
-      if (version.result.version) {
-        this.setState("ludusavi_enabled", true);
-        this.setState("ludusavi_version", version.result.version);
-      } else {
-        this.setState("ludusavi_version", "MISSING");
-      }
+    const version = await getLudusaviVersion();
+
+    if (version.version) {
+      this.setState("ludusavi_enabled", true);
+      this.setState("ludusavi_version", version.version);
     } else {
-      this.setState("ludusavi_version", "ERROR");
+      this.setState("ludusavi_version", "MISSING");
     }
   }
 
   private async initializeGames() {
-    this.setState("recent_games", await getGameConfig());
+    const games = await getConfig<string[]>("recent_games") ?? [];
+    this.setState("recent_games", games);
+
+    if (games.length > 0) {
+      this.setState("recent_games_selected", games[0]);
+    } 
   }
 
-  public setState = (key: keyof State, value: unknown, persist = false) => {
+  public setState = (key: keyof State, value: unknown) => {
     this._currentState = { ...this.currentState, [key]: value };
-
-    console.log(key, value, persist);
-
-    if (persist) {
-      if (typeof value === 'string')
-        this.serverApi.callPluginMethod<{ key: string; value: string }, null>("set_config", { key, value }).then(e => console.log(e));
-      else
-        console.error("Tried to persist non-string value:", value);
-    }
-
     this._subscribers.forEach((e) => e.callback(this.currentState));
   };
 
-  public pushRecentGame = async (appId: number, gameName: string) => {
+  public pushRecentGame = async (gameName: string) => {
     const recent = [...this.currentState.recent_games];
 
     // Move game up in the stack
-    let loadedGame = recent.find(e => e.name === gameName);
-    if (loadedGame) recent.splice(recent.findIndex(e => e.name === gameName), 1);
+    const lastUsedIdx = recent.findIndex(e => e === gameName);
 
-    if (!loadedGame) {
-      loadedGame = { id: appId, name: gameName, aliases: [gameName], autosync: false }
-      getServerApi().toaster.toast({ title: "Ludusavi", body: 'New game detected. Open Ludusavi to configure.' })
+    if (lastUsedIdx >= 0) {
+      recent.splice(lastUsedIdx, 1);
+    }
+    else {
+      setGameConfig(gameName, { name: gameName, alias: gameName, autoSync: false });
+      toaster.toast({ title: "Ludusavi", body: 'New game detected. Open Ludusavi to configure.' })
     }
 
-    const recentGames = [loadedGame, ...recent];
-    await updateGameConfig(recentGames);
-
-    this._currentState = { ...this.currentState, recent_games: recentGames }
-    this._subscribers.forEach((e) => e.callback(this.currentState));
+    this.setState("recent_games_selected",  gameName);
+    this.setState("recent_games", [gameName, ...recent]);
+    setConfig('recent_games', this.currentState.recent_games)
   }
 
   public subscribe = (callback: (e: State) => void) => {
@@ -146,32 +128,3 @@ export const useAppState = () => {
 };
 
 export const setAppState = appState.setState;
-export const getServerApi = () => appState.serverApi;
-
-export const updateGameState = async (game: GameInfo) => {
-  const allGames = [...appState.currentState.recent_games];
-  allGames.splice(allGames.map(a => a.id).indexOf(game.id), 1, { ...game });
-      
-  setAppState("recent_games", allGames);
-  await updateGameConfig(allGames);    
-}
-
-
-export async function updateGameConfig(games: GameInfo[]) {
-  return await getServerApi().callPluginMethod<{ cfg: string }, void>("set_game_config", { cfg: JSON.stringify(games) }).then(e => {
-    if (!e.success)
-      console.error(e.result);
-  });
-}
-
-export async function getGameConfig() {
-  return await getServerApi().callPluginMethod<{}, string>("get_game_config", {}).then(e => {
-    if (!e.success)
-      console.error(e.result);
-
-    if (!e.success || !e.result)
-      return [];
-
-    return JSON.parse(e.result) as GameInfo[];
-  });
-}

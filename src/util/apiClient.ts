@@ -1,9 +1,9 @@
-import { getServerApi } from "./state";
-
 export interface LudusaviBackupResponse {
   errors?: {
     cloudConflict: {};
+    cloudSyncFailed: {};
     unknownGames: string[];
+    pluginError: string;
   };
   overall: {
     processedBytes: number;
@@ -21,11 +21,4 @@ export interface LudusaviBackupResponse {
       };
     };
   };
-}
-
-export async function verifyGameSyncable(gameName: string) {
-  const result = await getServerApi().callPluginMethod<{ game_name: string }, { exists: boolean }>("verify_game_exists", { game_name: gameName });
-  if (result.success && result.result.exists) return true;
-
-  return false;
 }

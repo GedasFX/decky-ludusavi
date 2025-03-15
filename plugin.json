@@ -1,7 +1,8 @@
 {
-  "name": "Ludusavi",
+  "name": "Decky Ludusavi",
   "author": "GedasFX",
   "flags": [],
+  "api_version": 1,
   "publish": {
     "tags": ["ludusavi", "backup", "cloud", "sync"],
     "description": "Ludusavi for Decky. Backup, restore, and keep multiple versions of your save files with ease! Requires Ludusavi installed on the device.",

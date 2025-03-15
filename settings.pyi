@@ -1,0 +1,9 @@
+#!/usr/bin/env python
+from typing import Any
+
+# https://github.com/SteamDeckHomebrew/decky-loader/blob/8db3711cab5808b56154a99945d86d938c986011/backend/decky_loader/settings.py#L10
+class SettingsManager:
+    def __init__(self, name: str, settings_directory: str | None = None) -> None: ...
+    def getSetting(self, key: str, default: Any = None) -> Any: ...
+    def setSetting(self, key: str, value: Any) -> Any: ...
+
