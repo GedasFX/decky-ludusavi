@@ -75,9 +75,11 @@ class AppState {
 
     // Move game up in the stack
     const lastUsedIdx = recent.findIndex(e => e === gameName);
-    if (lastUsedIdx) recent.splice(lastUsedIdx, 1);
 
-    if (lastUsedIdx < 0) {
+    if (lastUsedIdx >= 0) {
+      recent.splice(lastUsedIdx, 1);
+    }
+    else {
       setGameConfig(gameName, { name: gameName, alias: gameName, autoSync: false });
       toaster.toast({ title: "Ludusavi", body: 'New game detected. Open Ludusavi to configure.' })
     }
