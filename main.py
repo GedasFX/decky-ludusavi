@@ -8,8 +8,6 @@ decky.logger.setLevel("DEBUG")
 class Plugin:
     ludusavi: Ludusavi
 
-    backup_task: asyncio.Task
-
     # Check plugin for initialization
     async def get_ludusavi_version(self):
         decky.logger.debug("Executing: get_ludusavi_version()")
@@ -17,28 +15,28 @@ class Plugin:
         return { "bin_path": self.ludusavi.bin_path, "version": self.ludusavi.version }
     
     async def get_config(self, key: str):
-        decky.logger.debug("Executing: get_config(%s)", key)
+        decky.logger.debug("Executing: get_config('%s')", key)
         return config.app_config.getSetting(key)
 
     async def set_config(self, key: str, value):
-        decky.logger.debug("Executing: set_config(%s, %s)", key, value)
+        decky.logger.debug("Executing: set_config('%s', '%s')", key, value)
         return config.app_config.setSetting(key, value)
     
     async def get_game_config(self, key: str):
-        decky.logger.debug("Executing: get_game_config(%s)", key)
+        decky.logger.debug("Executing: get_game_config('%s')", key)
         return config.game_config.getSetting(key)
 
     async def set_game_config(self, key: str, value):
-        decky.logger.debug("Executing: set_game_config(%s, %s)", key, value)
+        decky.logger.debug("Executing: set_game_config('%s', '%s')", key, value)
         config.game_config.setSetting(key, value)
     
     async def verify_game_exists(self, game_name: str):
-        decky.logger.debug("Executing: verify_game_exists(%s)", game_name)
+        decky.logger.debug("Executing: verify_game_exists('%s')", game_name)
         return { "exists": self.ludusavi.check_game(game_name) }
     
     async def backup_game(self, game_name: str):
-        decky.logger.debug("Executing: backup_game(%s)", game_name)
-        self.backup_task = asyncio.create_task(self.ludusavi.backup_game_async(game_name))
+        decky.logger.debug("Executing: backup_game('%s')", game_name)
+        asyncio.create_task(self.ludusavi.backup_game_async(game_name))
 
 
     # Asyncio-compatible long-running code, executed in a task when the plugin is loaded

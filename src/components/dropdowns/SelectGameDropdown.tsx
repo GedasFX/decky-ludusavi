@@ -17,7 +17,7 @@ export const SelectGameDropdown: FC<{ onSelected: (game: string) => void }> = ({
 
   const data = useMemo(() => {
     if (recent_games.length === 0) {
-      return [{ label: "N/A - Open a game to add it here", data: -1 }];
+      return [{ label: "No Recent Games", data: -1 }];
     }
 
     return recent_games.slice(0, 30).map((g, i) => ({ label: g, data: i }));

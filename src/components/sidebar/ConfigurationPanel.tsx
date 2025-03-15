@@ -1,12 +1,12 @@
 import { PanelSection, PanelSectionRow, ToggleField } from "@decky/ui";
-import { setAppState, State, useAppState } from "../../util/state";
+import { PersistentState, setAppState, useAppState } from "../../util/state";
 import { setConfig } from "../../util/backend";
 import { useCallback } from "react";
 
 export default function ConfigurationPanel() {
   const appState = useAppState();
 
-  const handleConfigChange = useCallback((key: keyof State, value: boolean): void => {
+  const handleConfigChange = useCallback((key: keyof PersistentState, value: boolean): void => {
     setAppState(key, value);
     setConfig(key, value);
   }, []);

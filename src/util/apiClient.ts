@@ -1,7 +1,9 @@
 export interface LudusaviBackupResponse {
   errors?: {
     cloudConflict: {};
+    cloudSyncFailed: {};
     unknownGames: string[];
+    pluginError: string;
   };
   overall: {
     processedBytes: number;

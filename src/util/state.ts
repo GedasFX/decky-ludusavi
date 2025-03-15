@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getConfig, getLudusaviVersion, setGameConfig } from "./backend";
+import { getConfig, getLudusaviVersion, setConfig, setGameConfig } from "./backend";
 import { toaster } from "@decky/api";
 
 export interface GameInfo {
@@ -9,19 +9,21 @@ export interface GameInfo {
   autoSync: boolean;
 }
 
+export type PersistentState = {
+  // Persistent
+  auto_backup_enabled: boolean;
+  auto_backup_toast_enabled: boolean;
+
+  recent_games: string[];
+}
+
 export type State = {
   // Transient
   syncing: boolean;
 
-  recent_games: string[];
-
   ludusavi_enabled: boolean;
   ludusavi_version: string;
-
-  // Persistent
-  auto_backup_enabled: boolean;
-  auto_backup_toast_enabled: boolean;
-};
+} & PersistentState;
 
 class AppState {
   private _subscribers: { id: number; callback: (e: State) => void }[] = [];
@@ -60,7 +62,7 @@ class AppState {
   }
 
   private async initializeGames() {
-    this.setState("recent_games", await getConfig<string[]>("recent_games"));
+    this.setState("recent_games", (await getConfig<string[]>("recent_games")) ?? []);
   }
 
   public setState = (key: keyof State, value: unknown) => {
@@ -81,6 +83,7 @@ class AppState {
     }
 
     this.setState("recent_games", [gameName, ...recent]);
+    setConfig('recent_games', this.currentState.recent_games)
   }
 
   public subscribe = (callback: (e: State) => void) => {

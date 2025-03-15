@@ -19,7 +19,7 @@ export const onGameExit = async (appId: number) => {
         const gameName = await resolveGameName(appId);
         const game = await getGameConfig(gameName);
 
-        backupGame(game.alias);
+        await backupGame(game.alias);
     }
 }
 
@@ -35,29 +35,43 @@ export async function backupGame(gameName: string) {
 }
 
 async function backup(gameName: string) {
-    return new Promise<LudusaviBackupResponse>(async (resolve, reject) => {
-        if (appState.currentState.syncing)
-            reject('Sync in Progress');
+    if (appState.currentState.syncing) {
+        return Promise.reject('Sync in Progress');
+    }
 
-        setAppState("syncing", true);
+    setAppState("syncing", true);
 
-        const listener = addEventListener<[LudusaviBackupResponse]>("backup_game_complete", (r) => {
+    return new Promise<LudusaviBackupResponse>((resolve, reject) => {
+        const listener = (r: LudusaviBackupResponse) => {
             removeEventListener("backup_game_complete", listener);
             setAppState("syncing", false);
             resolve(r);
-        });
+        };
 
-        await startBackup(gameName);
+        addEventListener("backup_game_complete", listener);
+
+        startBackup(gameName).catch((error) => {
+            removeEventListener("backup_game_complete", listener);
+            setAppState("syncing", false);
+            reject(error);
+        });
     });
 }
 
 function handleComplete(start: Date, result: LudusaviBackupResponse) {
+    console.error(result)
     if (result.errors) {
         if (result.errors.cloudConflict) {
             toaster.toast({ title: "⚠️ Ludusavi: Cloud Conflict", body: "Files out of sync with cloud." });
         }
+        if (result.errors.cloudSyncFailed) {
+            toaster.toast({ title: "⚠️ Ludusavi: Cloud Sync Issue", body: "Unable to synchronize with cloud." })
+        }
         if (result.errors.unknownGames) {
-            toaster.toast({ title: "⚠️ Ludusavi: Unknown Game", body: result.errors.unknownGames[0] })
+            toaster.toast({ title: "⛔ Ludusavi: Unknown Game", body: result.errors.unknownGames[0] })
+        }
+        if (result.errors.pluginError) {
+            toaster.toast({ title: "⛔ Ludusavi: Plugin Error", body: result.errors.pluginError })
         }
 
         console.error(result.errors)
