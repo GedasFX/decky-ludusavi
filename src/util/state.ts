@@ -10,9 +10,7 @@ export interface GameInfo {
 }
 
 export type PersistentState = {
-  // Persistent
   auto_backup_enabled: boolean;
-  auto_backup_toast_enabled: boolean;
 
   recent_games: string[];
 }
@@ -23,6 +21,9 @@ export type State = {
 
   ludusavi_enabled: boolean;
   ludusavi_version: string;
+
+  game_info?: GameInfo;
+  recent_games_selection_idx: number; // While its local state, dropdown gets unmounted when popup appears, so needs to be global state
 } & PersistentState;
 
 class AppState {
@@ -32,9 +33,9 @@ class AppState {
     syncing: false,
     ludusavi_enabled: false,
     ludusavi_version: "LOADING...",
-    auto_backup_enabled: false, // Persistent - string
-    auto_backup_toast_enabled: true, // Persistent - string
+    auto_backup_enabled: false,
     recent_games: [],
+    recent_games_selection_idx: -1,
   };
 
   public get currentState() {
@@ -47,7 +48,6 @@ class AppState {
 
   private async initializeConfig() {
     this.setState("auto_backup_enabled", await getConfig("auto_backup_enabled"));
-    this.setState("auto_backup_toast_enabled", await getConfig("auto_backup_toast_enabled"));
   }
 
   private async initializeVersion() {
@@ -62,7 +62,12 @@ class AppState {
   }
 
   private async initializeGames() {
-    this.setState("recent_games", (await getConfig<string[]>("recent_games")) ?? []);
+    const games = await getConfig<string[]>("recent_games") ?? [];
+    this.setState("recent_games", games);
+
+    if (games.length > 0) {
+      this.setState("recent_games_selection_idx", 0);
+    } 
   }
 
   public setState = (key: keyof State, value: unknown) => {
@@ -84,6 +89,7 @@ class AppState {
       toaster.toast({ title: "Ludusavi", body: 'New game detected. Open Ludusavi to configure.' })
     }
 
+    this.setState("recent_games_selection_idx",  0);
     this.setState("recent_games", [gameName, ...recent]);
     setConfig('recent_games', this.currentState.recent_games)
   }

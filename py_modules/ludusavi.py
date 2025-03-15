@@ -24,10 +24,6 @@ class Ludusavi:
         await self._run_command(
             [*self.bin_path, "backup", "--api", "--force", game_name]
         )
-    async def restore_game_async(self, game_name: str):
-        await self._run_command(
-            [*self.bin_path, "backup", "--api", "--force", game_name]
-        )
 
     async def _run_command(self, cmd: list[str], event: str):
         decky.logger.info("Running command: %s", subprocess.list2cmdline(cmd))

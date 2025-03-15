@@ -20,13 +20,6 @@ export default function ConfigurationPanel() {
           onChange={e => handleConfigChange("auto_backup_enabled", e)}
         />
       </PanelSectionRow>
-      <PanelSectionRow>
-        <ToggleField
-          label="Notifications Enabled"
-          checked={appState.auto_backup_toast_enabled}
-          onChange={e => handleConfigChange("auto_backup_toast_enabled", e)}
-        />
-      </PanelSectionRow>
     </PanelSection>
   );
 }

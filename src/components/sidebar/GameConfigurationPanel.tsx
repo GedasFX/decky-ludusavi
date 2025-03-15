@@ -1,13 +1,14 @@
 import { PanelSection, PanelSectionRow, ToggleField } from "@decky/ui";
-import { GameInfo } from "../../util/state";
-import { FC, useState } from "react";
+import { setAppState, useAppState } from "../../util/state";
+import { FC, useCallback } from "react";
 import { getGameConfig, setGameConfig } from "../../util/backend";
 import { SelectGameDropdown } from "../dropdowns/SelectGameDropdown";
 import { SyncButton } from "../other/SyncButton";
 import { ConfigureAliasesButton } from "./AliasConfigurator";
 
 export const GameConfigurationPanel: FC = () => {
-  const [gameInfo, setGameInfo] = useState<GameInfo>();
+  const { game_info: gameInfo } = useAppState();
+  const setGameInfo = useCallback((e: unknown) => setAppState("game_info", e), []);
 
   return (
     <>
@@ -16,7 +17,9 @@ export const GameConfigurationPanel: FC = () => {
           <SelectGameDropdown
             onSelected={(gameName) => {
               setGameInfo(undefined);
-              getGameConfig(gameName).then((e) => setGameInfo(e));
+              getGameConfig(gameName).then((e) => {
+                setGameInfo(e);
+              });
             }}
           />
         </PanelSectionRow>
