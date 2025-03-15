@@ -13,11 +13,11 @@ class Plugin:
     # Check plugin for initialization
     async def get_ludusavi_version(self):
         decky.logger.debug("Executing: get_ludusavi_version()")
-        decky.logger.debug("bin_path " + self.ludusavi.bin_path)
+        decky.logger.info("bin_path: %s", self.ludusavi.bin_path)
         return { "bin_path": self.ludusavi.bin_path, "version": self.ludusavi.version }
     
     async def get_config(self, key: str):
-        decky.logger.debug("Executing: get_config()")
+        decky.logger.debug("Executing: get_config(%s)", key)
         return config.app_config.getSetting(key)
 
     async def set_config(self, key: str, value):
@@ -25,11 +25,11 @@ class Plugin:
         return config.app_config.setSetting(key, value)
     
     async def get_game_config(self, key: str):
-        decky.logger.debug("Executing: get_game_config()")
+        decky.logger.debug("Executing: get_game_config(%s)", key)
         return config.game_config.getSetting(key)
 
     async def set_game_config(self, key: str, value):
-        decky.logger.debug("Executing: set_game_config(cfg)")
+        decky.logger.debug("Executing: set_game_config(%s, %s)", key, value)
         config.game_config.setSetting(key, value)
     
     async def verify_game_exists(self, game_name: str):
@@ -43,7 +43,7 @@ class Plugin:
 
     # Asyncio-compatible long-running code, executed in a task when the plugin is loaded
     async def _main(self):
-        self.ludusavi = Ludusavi(['/var/lib/flatpak/exports/bin/com.github.mtkennerly.ludusavi', 'ludusavi', 'ludusavi.exe'])
+        self.ludusavi = Ludusavi(['flatpak run com.github.mtkennerly.ludusavi', 'ludusavi', 'ludusavi.exe'])
 
     # Function called first during the unload process, utilize this to handle your plugin being removed
     async def _unload(self):

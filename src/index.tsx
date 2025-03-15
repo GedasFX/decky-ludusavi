@@ -11,8 +11,8 @@ import { GameConfigurationPanel } from "./components/sidebar/GameConfigurationPa
 const Content: FC = () => {
   return (
     <>
-      <GameConfigurationPanel />
-      <ConfigurationPanel />
+      {/* <GameConfigurationPanel /> */}
+      {/* <ConfigurationPanel /> */}
       <LudusaviVersionPanel />
     </>
   );

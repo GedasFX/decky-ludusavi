@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getConfig, getGameConfig, getLudusaviVersion, setGameConfig } from "./backend";
+import { getConfig, getLudusaviVersion, setGameConfig } from "./backend";
 import { toaster } from "@decky/api";
 
 export interface GameInfo {
@@ -50,6 +50,7 @@ class AppState {
 
   private async initializeVersion() {
     const version = await getLudusaviVersion();
+
     if (version.version) {
       this.setState("ludusavi_enabled", true);
       this.setState("ludusavi_version", version.version);
