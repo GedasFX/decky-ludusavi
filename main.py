@@ -3,7 +3,7 @@ import config
 import decky
 from ludusavi import Ludusavi
 
-decky.logger.setLevel("DEBUG")
+decky.logger.setLevel("INFO")
 
 
 class Plugin:
