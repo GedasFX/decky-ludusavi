@@ -2,12 +2,12 @@ import { FC, useMemo } from "react";
 import { setAppState, useAppState } from "../../util/state";
 import { Dropdown } from "@decky/ui";
 
-export const SelectGameDropdown: FC<{ onSelected: (game: string) => void }> = ({ onSelected }) => {
-  const { recent_games, recent_games_selection_idx } = useAppState();
+export const SelectGameDropdown: FC = () => {
+  const { recent_games, recent_games_selected } = useAppState();
+  const idx = useMemo(() => recent_games?.findIndex(e => e == recent_games_selected) ?? -1, [recent_games, recent_games_selected])
 
   const update = (index: number) => {
-    setAppState("recent_games_selection_idx", index);
-    onSelected(recent_games[index]);
+    setAppState("recent_games_selected", recent_games[index]);
   };
 
   const data = useMemo(() => {
@@ -18,5 +18,5 @@ export const SelectGameDropdown: FC<{ onSelected: (game: string) => void }> = ({
     return recent_games.slice(0, 5).map((g, i) => ({ label: g, data: i }));
   }, [recent_games]);
 
-  return <Dropdown rgOptions={data} selectedOption={recent_games_selection_idx} onChange={(e) => update(e.data)} disabled={recent_games.length === 0} />;
+  return <Dropdown rgOptions={data} selectedOption={idx} onChange={(e) => update(e.data)} disabled={recent_games.length === 0} />;
 };

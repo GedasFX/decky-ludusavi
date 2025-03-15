@@ -1,54 +1,54 @@
 import { PanelSection, PanelSectionRow, ToggleField } from "@decky/ui";
 import { setAppState, useAppState } from "../../util/state";
-import { FC, useCallback } from "react";
+import { FC, useCallback, useEffect } from "react";
 import { getGameConfig, setGameConfig } from "../../util/backend";
 import { SelectGameDropdown } from "../dropdowns/SelectGameDropdown";
 import { SyncButton } from "../other/SyncButton";
 import { ConfigureAliasesButton } from "./AliasConfigurator";
 
 export const GameConfigurationPanel: FC = () => {
-  const { game_info: gameInfo } = useAppState();
+  const { game_info, recent_games_selected } = useAppState();
   const setGameInfo = useCallback((e: unknown) => setAppState("game_info", e), []);
+
+  useEffect(() => {
+    setGameInfo(undefined);
+    if (recent_games_selected) {
+      getGameConfig(recent_games_selected).then((e) => setGameInfo(e));
+    }
+  }, [recent_games_selected]);
 
   return (
     <>
       <PanelSection>
         <PanelSectionRow>
-          <SelectGameDropdown
-            onSelected={(gameName) => {
-              setGameInfo(undefined);
-              getGameConfig(gameName).then((e) => {
-                setGameInfo(e);
-              });
-            }}
-          />
+          <SelectGameDropdown />
         </PanelSectionRow>
       </PanelSection>
-      {gameInfo && (
+      {game_info && (
         <PanelSection>
           <PanelSectionRow>
-            <SyncButton alias={gameInfo.alias} />
+            <SyncButton alias={game_info.alias} />
           </PanelSectionRow>
         </PanelSection>
       )}
-      {gameInfo && (
+      {game_info && (
         <>
           <PanelSection title="Game Config">
             <PanelSectionRow>
               <ToggleField
                 label="Sync after closing game"
-                checked={gameInfo.autoSync}
+                checked={game_info.autoSync}
                 onChange={(e) => {
-                  const config = { ...gameInfo, autoSync: e };
+                  const config = { ...game_info, autoSync: e };
                   setGameConfig(config.name, config).then(() => setGameInfo(config));
                 }}
               />
             </PanelSectionRow>
             <PanelSectionRow>
               <ConfigureAliasesButton
-                game={gameInfo}
+                game={game_info}
                 onChange={(e) => {
-                  const config = { ...gameInfo, alias: e };
+                  const config = { ...game_info, alias: e };
                   setGameConfig(config.name, config).then(() => setGameInfo(config));
                 }}
               />

@@ -22,7 +22,8 @@ class Ludusavi:
 
     async def backup_game_async(self, game_name: str):
         await self._run_command(
-            [*self.bin_path, "backup", "--api", "--force"], game_name
+            [*self.bin_path, "backup", "--api", "--force", game_name],
+            "backup_game_complete",
         )
 
     async def _run_command(self, cmd: list[str], event: str):

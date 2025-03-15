@@ -23,7 +23,8 @@ export type State = {
   ludusavi_version: string;
 
   game_info?: GameInfo;
-  recent_games_selection_idx: number; // While its local state, dropdown gets unmounted when popup appears, so needs to be global state
+
+  recent_games_selected?: string; // While its local state, dropdown gets unmounted when popup appears, so needs to be global state
 } & PersistentState;
 
 class AppState {
@@ -35,7 +36,6 @@ class AppState {
     ludusavi_version: "LOADING...",
     auto_backup_enabled: false,
     recent_games: [],
-    recent_games_selection_idx: -1,
   };
 
   public get currentState() {
@@ -66,7 +66,7 @@ class AppState {
     this.setState("recent_games", games);
 
     if (games.length > 0) {
-      this.setState("recent_games_selection_idx", 0);
+      this.setState("recent_games_selected", games[0]);
     } 
   }
 
@@ -89,7 +89,7 @@ class AppState {
       toaster.toast({ title: "Ludusavi", body: 'New game detected. Open Ludusavi to configure.' })
     }
 
-    this.setState("recent_games_selection_idx",  0);
+    this.setState("recent_games_selected",  gameName);
     this.setState("recent_games", [gameName, ...recent]);
     setConfig('recent_games', this.currentState.recent_games)
   }

@@ -1,7 +1,7 @@
 {
   "name": "Ludusavi",
   "author": "GedasFX",
-  "flags": ["debug"],
+  "flags": [],
   "api_version": 1,
   "publish": {
     "tags": ["ludusavi", "backup", "cloud", "sync"],
