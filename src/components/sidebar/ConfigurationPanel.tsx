@@ -15,9 +15,16 @@ export default function ConfigurationPanel() {
     <PanelSection title="Global Config">
       <PanelSectionRow>
         <ToggleField
-          label="Auto-Sync Enabled"
+          label="Auto-Sync Feature Enabled"
           checked={appState.auto_backup_enabled}
           onChange={e => handleConfigChange("auto_backup_enabled", e)}
+        />
+      </PanelSectionRow>
+      <PanelSectionRow>
+        <ToggleField
+          label="Auto-Sync New Games"
+          checked={appState.auto_backup_new_games}
+          onChange={e => handleConfigChange("auto_backup_new_games", e)}
         />
       </PanelSectionRow>
     </PanelSection>

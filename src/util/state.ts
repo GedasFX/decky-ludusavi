@@ -11,6 +11,7 @@ export interface GameInfo {
 
 export type PersistentState = {
   auto_backup_enabled: boolean;
+  auto_backup_new_games: boolean;
 
   recent_games: string[];
 }
@@ -35,6 +36,7 @@ class AppState {
     ludusavi_enabled: false,
     ludusavi_version: "LOADING...",
     auto_backup_enabled: false,
+    auto_backup_new_games: false,
     recent_games: [],
   };
 
@@ -48,6 +50,7 @@ class AppState {
 
   private async initializeConfig() {
     this.setState("auto_backup_enabled", await getConfig("auto_backup_enabled"));
+    this.setState("auto_backup_new_games", await getConfig("auto_backup_new_games"));
   }
 
   private async initializeVersion() {
@@ -67,7 +70,7 @@ class AppState {
 
     if (games.length > 0) {
       this.setState("recent_games_selected", games[0]);
-    } 
+    }
   }
 
   public setState = (key: keyof State, value: unknown) => {
@@ -85,11 +88,11 @@ class AppState {
       recent.splice(lastUsedIdx, 1);
     }
     else {
-      setGameConfig(gameName, { name: gameName, alias: gameName, autoSync: false });
+      setGameConfig(gameName, { name: gameName, alias: gameName, autoSync: this.currentState.auto_backup_new_games });
       toaster.toast({ title: "Ludusavi", body: 'New game detected. Open Ludusavi to configure.' })
     }
 
-    this.setState("recent_games_selected",  gameName);
+    this.setState("recent_games_selected", gameName);
     this.setState("recent_games", [gameName, ...recent]);
     setConfig('recent_games', this.currentState.recent_games)
   }

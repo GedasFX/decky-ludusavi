@@ -61,7 +61,6 @@ async function backup(gameName: string) {
 }
 
 function handleComplete(start: Date, result: LudusaviBackupResponse) {
-    console.error(result)
     if (result.errors) {
         if (result.errors.cloudConflict) {
             toaster.toast({ title: "⚠️ Ludusavi: Cloud Conflict", body: "Files out of sync with cloud." });
@@ -103,10 +102,6 @@ function handleComplete(start: Date, result: LudusaviBackupResponse) {
 
                 if (!file.ignored && file.change !== "Same") bytesChanged += file.bytes;
             });
-
-            // if (changes.New > 0) message += `+ ${changes.New}, `;
-            // if (changes.Different > 0) message += `~ ${changes.Different}, `
-            // message = message.slice(0, -2);
 
             message += `Synced ${changes.New + changes.Different} file(s) [${(bytesChanged / 1_000_000).toFixed(2)} MB]`;
         }
