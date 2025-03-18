@@ -6,6 +6,6 @@
   "publish": {
     "tags": ["ludusavi", "backup", "cloud", "sync"],
     "description": "Ludusavi for Decky. Backup, restore, and keep multiple versions of your save files with ease! Requires Ludusavi installation on the device.",
-    "image": "https://raw.githubusercontent.com/mtkennerly/ludusavi/master/assets/icon.svg"
+    "image": "https://github.com/GedasFX/decky-ludusavi/raw/main/assets/thumbnail.png"
   }
 }
