@@ -39,7 +39,7 @@ class Ludusavi:
             stdout, _ = await process.communicate()
 
             json_str = stdout.decode()
-            decky.logger.debug(json_str)
+            decky.logger.info(json_str)
 
             json_end = json_str.rindex("}") + 1
             json_data = json.loads(json_str[:json_end])
