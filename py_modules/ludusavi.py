@@ -48,7 +48,7 @@ class Ludusavi:
 
             return json_data
         except Exception as e:
-            await decky.emit(event, {"errors": {"pluginError": e}})
+            await decky.emit(event, {"errors": {"pluginError": str(e)}})
 
     def _set_env(self):
         # Fix env for flatpak support.
