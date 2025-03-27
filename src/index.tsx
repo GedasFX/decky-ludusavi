@@ -30,8 +30,8 @@ export default definePlugin(() => {
   });
 
   return {
-    name: 'Ludusavi',
-    titleView: <div className={staticClasses.Title}>Ludusavi</div>,
+    name: 'Decky Ludusavi',
+    titleView: <div className={staticClasses.Title}>Decky Ludusavi</div>,
     content: <Content />,
     icon: <LuDatabaseBackup />,
     onDismount() {

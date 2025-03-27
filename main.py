@@ -47,4 +47,4 @@ class Plugin:
 
     # Migrations that should be performed before entering `_main()`.
     async def _migration(self):
-        pass
+        config.migrate()
