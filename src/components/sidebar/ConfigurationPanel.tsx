@@ -27,6 +27,13 @@ export default function ConfigurationPanel() {
           onChange={e => handleConfigChange("auto_backup_new_games", e)}
         />
       </PanelSectionRow>
+      <PanelSectionRow>
+        <ToggleField
+          label="Auto-Sync Notifications"
+          checked={appState.auto_backup_toast_enabled}
+          onChange={e => handleConfigChange("auto_backup_toast_enabled", e)}
+        />
+      </PanelSectionRow>
     </PanelSection>
   );
 }

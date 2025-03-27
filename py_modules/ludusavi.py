@@ -2,7 +2,7 @@ import asyncio
 import os
 import subprocess
 import json
-import decky
+import decky # type: ignore
 
 
 class Ludusavi:

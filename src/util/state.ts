@@ -12,6 +12,7 @@ export interface GameInfo {
 export type PersistentState = {
   auto_backup_enabled: boolean;
   auto_backup_new_games: boolean;
+  auto_backup_toast_enabled: boolean;
 
   recent_games: string[];
 }
@@ -37,6 +38,7 @@ class AppState {
     ludusavi_version: "LOADING...",
     auto_backup_enabled: false,
     auto_backup_new_games: false,
+    auto_backup_toast_enabled: false,
     recent_games: [],
   };
 
@@ -51,6 +53,7 @@ class AppState {
   private async initializeConfig() {
     this.setState("auto_backup_enabled", await getConfig("auto_backup_enabled"));
     this.setState("auto_backup_new_games", await getConfig("auto_backup_new_games"));
+    this.setState("auto_backup_toast_enabled", await getConfig("auto_backup_toast_enabled"));
   }
 
   private async initializeVersion() {
@@ -89,7 +92,10 @@ class AppState {
     }
     else {
       setGameConfig(gameName, { name: gameName, alias: gameName, autoSync: this.currentState.auto_backup_new_games });
-      toaster.toast({ title: "Ludusavi", body: 'New game detected. Open Ludusavi to configure.' })
+
+      if (appState.currentState.auto_backup_toast_enabled) {
+        toaster.toast({ title: "Ludusavi", body: 'New game detected. Open Ludusavi to configure.' });
+      }
     }
 
     this.setState("recent_games_selected", gameName);
