@@ -9,3 +9,5 @@ export const getConfig = <T>(key: keyof PersistentState) => call<[string], T>("g
 export const setConfig = <T>(key: keyof PersistentState, value: T) => call<[string, T]>("set_config", key, value);
 export const getGameConfig = (key: string) => call<[string], GameInfo>("get_game_config", key);
 export const setGameConfig = (key: string, value: GameInfo) => call<[string, GameInfo]>("set_game_config", key, value);
+
+export const getPluginLogs = () => call<[], string[]>("get_plugin_logs");
