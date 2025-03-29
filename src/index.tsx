@@ -1,18 +1,25 @@
 import { definePlugin } from "@decky/api";
-import { LifetimeNotification, staticClasses } from "@decky/ui";
 import { FC } from "react";
 import { LuDatabaseBackup } from "react-icons/lu";
 import LudusaviVersionPanel from "./components/sidebar/LusudaviVersionPanel";
-import appState from "./util/state";
+import appState, { useAppState } from "./util/state";
 import ConfigurationPanel from "./components/sidebar/ConfigurationPanel";
-import { onGameExit, onGameStart } from "./util/syncUtil";
 import { GameConfigurationPanel } from "./components/sidebar/GameConfigurationPanel";
+import { registerDependencies } from "./util/registrations";
+import OtherPanel from "./components/sidebar/OtherPanel";
 
 const Content: FC = () => {
+  const { ludusavi_enabled } = useAppState();
+
+  if (!ludusavi_enabled) {
+    <LudusaviVersionPanel />;
+  }
+
   return (
     <>
       <GameConfigurationPanel />
       <ConfigurationPanel />
+      <OtherPanel />
       <LudusaviVersionPanel />
     </>
   );
@@ -20,22 +27,14 @@ const Content: FC = () => {
 
 export default definePlugin(() => {
   appState.initialize();
-
-  const { unregister: removeGameExitListener } = SteamClient.GameSessions.RegisterForAppLifetimeNotifications(async (e: LifetimeNotification) => {
-    if (e.bRunning) {
-      onGameStart(e.unAppID);
-    } else {
-      onGameExit(e.unAppID);
-    }
-  });
+  const unregisterDependencies = registerDependencies();
 
   return {
-    name: 'Decky Ludusavi',
-    titleView: <div className={staticClasses.Title}>Decky Ludusavi</div>,
+    name: "Decky Ludusavi",
     content: <Content />,
     icon: <LuDatabaseBackup />,
-    onDismount() {
-      removeGameExitListener();
+    onDismount: () => {
+      unregisterDependencies();
     },
   };
 });

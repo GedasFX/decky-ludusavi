@@ -12,7 +12,6 @@ class Plugin:
     # Check plugin for initialization
     async def get_ludusavi_version(self):
         decky.logger.debug("Executing: get_ludusavi_version()")
-        decky.logger.info("bin_path: %s", self.ludusavi.bin_path)
         return {"bin_path": self.ludusavi.bin_path, "version": self.ludusavi.version}
 
     async def get_config(self, key: str):
@@ -34,6 +33,12 @@ class Plugin:
     async def backup_game(self, game_name: str):
         decky.logger.debug("Executing: backup_game('%s')", game_name)
         asyncio.create_task(self.ludusavi.backup_game_async(game_name))
+        
+    async def get_plugin_logs(self):
+        decky.logger.debug("Executing: get_plugin_logs()")
+        with open(decky.DECKY_PLUGIN_LOG) as f:
+            return f.read()
+        
 
     # Asyncio-compatible long-running code, executed in a task when the plugin is loaded
     async def _main(self):
