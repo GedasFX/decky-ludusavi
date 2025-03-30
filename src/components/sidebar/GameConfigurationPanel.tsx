@@ -28,7 +28,17 @@ export const GameConfigurationPanel: FC = () => {
         </PanelSectionRow>
       </PanelSection>
       {game_info && (
-        <div style={{ display: "flex", justifyContent: "space-between", paddingLeft: "1em", paddingRight: "1em", marginTop: "-1em", marginBottom: "1em" }}>
+        <div
+          style={{ display: "flex", justifyContent: "space-between", paddingLeft: "1em", paddingRight: "1em", marginTop: "-1em", marginBottom: "1em" }}
+          className="dls-sync-container"
+        >
+          <style>
+            {`
+    .dls-sync-container button {
+      min-width: 0 !important;
+    }
+  `}
+          </style>
           <PanelSectionRow>
             <SyncButton title="Backup" callback={() => backupGame(game_info.alias)} icon={<FaUpload />} />
           </PanelSectionRow>
