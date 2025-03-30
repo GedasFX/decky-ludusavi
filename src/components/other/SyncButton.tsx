@@ -1,22 +1,20 @@
 import { ButtonItem } from "@decky/ui";
 import { FC } from "react";
 import DeckyStoreButton from "./DeckyStoreButton";
-import { FaSave } from "react-icons/fa";
 import { useAppState } from "../../util/state";
-import { backupGame } from "../../util/syncUtil";
 
-export const SyncButton: FC<{ alias: string }> = ({ alias }) => {
+export const SyncButton: FC<{ title: string; callback: () => void; icon: JSX.Element }> = ({ title, callback, icon }) => {
   const { ludusavi_enabled, syncing } = useAppState();
 
   return (
-    <ButtonItem layout="below" disabled={!ludusavi_enabled || syncing} onClick={() => backupGame(alias)}>
+    <ButtonItem layout="below" disabled={!ludusavi_enabled || syncing} onClick={callback} bottomSeparator="none">
       <style>
         {`
     .dls-rotate {
-      animation: dcsrotate 1s infinite cubic-bezier(0.46, 0.03, 0.52, 0.96);
+      animation: dlsrotate 1s infinite cubic-bezier(0.46, 0.03, 0.52, 0.96);
     }
   
-    @keyframes dcsrotate {
+    @keyframes dlsrotate {
       from {
         transform: rotate(0deg);
       }
@@ -27,7 +25,7 @@ export const SyncButton: FC<{ alias: string }> = ({ alias }) => {
     }
   `}
       </style>
-      <DeckyStoreButton icon={<FaSave className={syncing ? "dls-rotate" : ""} />}>Sync Now</DeckyStoreButton>
+      <DeckyStoreButton icon={<div className={syncing ? "dls-rotate" : ""}>{icon}</div>}>{title}</DeckyStoreButton>
     </ButtonItem>
   );
 };

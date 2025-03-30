@@ -16,3 +16,11 @@ declare module "*.jpg" {
 interface Registration {
   unregister: () => void;
 }
+
+interface LudusaviConfig {
+  cloud: {
+    remote: unknown | null;
+    path: string;
+    synchronize: boolean;
+  }
+}
