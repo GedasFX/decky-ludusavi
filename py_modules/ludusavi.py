@@ -6,7 +6,7 @@ import decky  # type: ignore
 
 
 class Ludusavi:
-    bin_path: list[str]
+    bin_path: list[str] = None
     version: str
 
     _env: dict[str, str]
@@ -149,3 +149,32 @@ class Ludusavi:
             decky.logger.error(e)
             decky.logger.error(e.output)
             return False
+
+    async def install(self):
+        process = await asyncio.create_subprocess_exec(
+            *[
+                "flatpak",
+                "install",
+                "--or-update",
+                "-u",
+                "-y",
+                "--app",
+                "com.github.mtkennerly.ludusavi",
+                "--noninteractive",
+            ],
+            env=self._env,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.STDOUT,
+        )
+        stdout, _ = await process.communicate()
+        decky.logger.info("Ludusavi Update Result: %s", stdout.decode())
+
+        if process.returncode != 0:
+            await decky.emit(
+                "install_ludusavi_complete",
+                {"errors": {"pluginError": "Failed to install Ludusavi."}},
+            )
+            return
+
+        self.__init__(["flatpak run com.github.mtkennerly.ludusavi"])
+        await decky.emit("install_ludusavi_complete", {"result": "ok"})

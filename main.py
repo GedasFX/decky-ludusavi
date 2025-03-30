@@ -14,6 +14,10 @@ class Plugin:
         decky.logger.debug("Executing: get_ludusavi_version()")
         return {"bin_path": self.ludusavi.bin_path, "version": self.ludusavi.version}
 
+    async def install_ludusavi(self):
+        decky.logger.debug("Executing: install_ludusavi()")
+        asyncio.create_task(self.ludusavi.install())
+
     async def get_config(self, key: str):
         decky.logger.debug("Executing: get_config('%s')", key)
         return config.app_config.getSetting(key)

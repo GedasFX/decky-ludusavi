@@ -2,6 +2,7 @@ import { addEventListener, call, removeEventListener } from "@decky/api";
 import { GameInfo, PersistentState } from "./state";
 
 export const getLudusaviVersion = () => call<[], { bin_path?: string, version: string }>("get_ludusavi_version");
+export const installLudusavi = () => asyncHandler<{ error?: unknown }>(() => call("install_ludusavi"), "install_ludusavi_complete");
 
 export const backup = (gameName: string) => asyncHandler<LudusaviBackupResponse>(() => call("backup_game", gameName), "backup_game_complete");
 export const restore = (gameName: string, backupId: string) => asyncHandler<LudusaviBackupResponse>(() => call("restore_game", gameName, backupId, false, true), "restore_game_complete");
