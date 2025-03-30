@@ -14,26 +14,26 @@ export default function ConfigurationPanel() {
   return (
     <PanelSection title="Global Config">
       <PanelSectionRow>
-        <ToggleField
-          label="Auto-Sync Feature Enabled"
-          checked={appState.auto_backup_enabled}
-          onChange={e => handleConfigChange("auto_backup_enabled", e)}
-        />
+        <ToggleField label="Auto-Sync Feature Enabled" checked={appState.auto_backup_enabled} onChange={(e) => handleConfigChange("auto_backup_enabled", e)} />
       </PanelSectionRow>
-      <PanelSectionRow>
-        <ToggleField
-          label="Auto-Sync New Games"
-          checked={appState.auto_backup_new_games}
-          onChange={e => handleConfigChange("auto_backup_new_games", e)}
-        />
-      </PanelSectionRow>
-      <PanelSectionRow>
-        <ToggleField
-          label="Auto-Sync Notifications"
-          checked={appState.auto_backup_toast_enabled}
-          onChange={e => handleConfigChange("auto_backup_toast_enabled", e)}
-        />
-      </PanelSectionRow>
+      {appState.auto_backup_enabled && (
+        <>
+          <PanelSectionRow>
+            <ToggleField
+              label="Auto-Sync New Games"
+              checked={appState.auto_backup_new_games}
+              onChange={(e) => handleConfigChange("auto_backup_new_games", e)}
+            />
+          </PanelSectionRow>
+          <PanelSectionRow>
+            <ToggleField
+              label="Auto-Sync Notifications"
+              checked={appState.auto_backup_toast_enabled}
+              onChange={(e) => handleConfigChange("auto_backup_toast_enabled", e)}
+            />
+          </PanelSectionRow>
+        </>
+      )}
     </PanelSection>
   );
 }
