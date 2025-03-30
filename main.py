@@ -1,6 +1,6 @@
 import asyncio
 import config
-import decky
+import decky  # type: ignore
 from ludusavi import Ludusavi
 
 decky.logger.setLevel("INFO")
@@ -33,12 +33,49 @@ class Plugin:
     async def backup_game(self, game_name: str):
         decky.logger.debug("Executing: backup_game('%s')", game_name)
         asyncio.create_task(self.ludusavi.backup_game_async(game_name))
-        
+
+    async def restore_game(
+        self, game_name: str, backup_id: str, preview: bool, api_mode: bool
+    ):
+        decky.logger.debug(
+            "Executing: restore_game('%s', '%s', %b, %b)",
+            game_name,
+            backup_id,
+            preview,
+            api_mode,
+        )
+        asyncio.create_task(
+            self.ludusavi.restore_game_async(game_name, backup_id, preview, api_mode)
+        )
+
+    async def sync_game_cloud_state(
+        self, game_name: str, direction: str, preview: bool, api_mode: bool
+    ):
+        decky.logger.debug(
+            "Executing: sync_game_cloud_state('%s', '%s', %b, %b)",
+            game_name,
+            direction,
+            preview,
+            api_mode,
+        )
+        asyncio.create_task(
+            self.ludusavi.sync_game_cloud_state_async(
+                game_name, direction, preview, api_mode
+            )
+        )
+
+    async def get_game_backups(self, game_name: str):
+        decky.logger.debug("Executing: get_game_backups('%s')", game_name)
+        return await self.ludusavi.get_game_backups(game_name)
+
     async def get_plugin_logs(self):
         decky.logger.debug("Executing: get_plugin_logs()")
         with open(decky.DECKY_PLUGIN_LOG) as f:
             return f.read()
-        
+
+    async def get_ludusavi_config(self):
+        decky.logger.debug("Executing: get_ludusavi_config()")
+        return await self.ludusavi.get_config()
 
     # Asyncio-compatible long-running code, executed in a task when the plugin is loaded
     async def _main(self):
