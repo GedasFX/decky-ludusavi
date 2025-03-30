@@ -1,10 +1,13 @@
-import { PanelSection, PanelSectionRow, ToggleField } from "@decky/ui";
+import { PanelSection, PanelSectionRow, showModal, ToggleField } from "@decky/ui";
 import { setAppState, useAppState } from "../../util/state";
 import { FC, useCallback, useEffect } from "react";
 import { getGameConfig, setGameConfig } from "../../util/backend";
 import { SelectGameDropdown } from "../dropdowns/SelectGameDropdown";
 import { SyncButton } from "../other/SyncButton";
 import { ConfigureAliasesButton } from "./AliasConfigurator";
+import { backupGame } from "../../util/syncUtil";
+import { RestoreGameModal } from "../modals/RestoreGameModal";
+import { FaDownload, FaUpload } from "react-icons/fa";
 
 export const GameConfigurationPanel: FC = () => {
   const { game_info, recent_games_selected } = useAppState();
@@ -25,11 +28,24 @@ export const GameConfigurationPanel: FC = () => {
         </PanelSectionRow>
       </PanelSection>
       {game_info && (
-        <PanelSection>
+        <div
+          style={{ display: "flex", justifyContent: "space-between", paddingLeft: "1em", paddingRight: "1em", marginTop: "-1em", marginBottom: "1em" }}
+          className="dls-sync-container"
+        >
+          <style>
+            {`
+    .dls-sync-container button {
+      min-width: 0 !important;
+    }
+  `}
+          </style>
           <PanelSectionRow>
-            <SyncButton alias={game_info.alias} />
+            <SyncButton title="Backup" callback={() => backupGame(game_info.alias)} icon={<FaUpload />} />
           </PanelSectionRow>
-        </PanelSection>
+          <PanelSectionRow>
+            <SyncButton title="Restore" callback={() => showModal(<RestoreGameModal game={game_info} />)} icon={<FaDownload />} />
+          </PanelSectionRow>
+        </div>
       )}
       {game_info && (
         <>

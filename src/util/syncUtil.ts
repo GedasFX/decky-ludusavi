@@ -1,8 +1,7 @@
-import { LudusaviBackupResponse } from "./apiClient";
 import appState, { setAppState } from "./state";
 import { resolveGameName } from "./steamUtil";
-import { addEventListener, removeEventListener, toaster } from "@decky/api";
-import { getGameConfig, startBackup } from "./backend";
+import { toaster } from "@decky/api";
+import { backup, getGameConfig } from "./backend";
 
 export const onGameStart = async (appId: number) => {
     const gameName = await resolveGameName(appId);
@@ -27,37 +26,21 @@ export const onGameExit = async (appId: number) => {
 
 
 export async function backupGame(gameName: string) {
+    if (appState.currentState.syncing) {
+        throw 'Sync in Progress';
+    }
+
+    const start = new Date();
+
     try {
-        const start = new Date();
+        setAppState("syncing", true);
         handleComplete(start, await backup(gameName));
     } catch (e) {
         toaster.toast({ title: "⛔ Ludusavi: Error", body: "An error occurred while backing up. Check logs." });
         console.error(e);
+    } finally {
+        setAppState("syncing", false);
     }
-}
-
-async function backup(gameName: string) {
-    if (appState.currentState.syncing) {
-        return Promise.reject('Sync in Progress');
-    }
-
-    setAppState("syncing", true);
-
-    return new Promise<LudusaviBackupResponse>((resolve, reject) => {
-        const listener = (r: LudusaviBackupResponse) => {
-            removeEventListener("backup_game_complete", listener);
-            setAppState("syncing", false);
-            resolve(r);
-        };
-
-        addEventListener("backup_game_complete", listener);
-
-        startBackup(gameName).catch((error) => {
-            removeEventListener("backup_game_complete", listener);
-            setAppState("syncing", false);
-            reject(error);
-        });
-    });
 }
 
 function handleComplete(start: Date, result: LudusaviBackupResponse) {
@@ -106,9 +89,11 @@ function handleComplete(start: Date, result: LudusaviBackupResponse) {
             message += `Synced ${changes.New + changes.Different} file(s) [${(bytesChanged / 1_000_000).toFixed(2)} MB]`;
         }
 
-        toaster.toast({
-            title: `Ludusavi Backup Complete - ${gameName}`,
-            body: `${message}. ⌛ ${((new Date().getTime() - start.getTime()) / 1000).toFixed(2)} s.`,
-        });
+        if (appState.currentState.auto_backup_toast_enabled) {
+            toaster.toast({
+                title: `Ludusavi Backup Complete - ${gameName}`,
+                body: `${message}. ⌛ ${((new Date().getTime() - start.getTime()) / 1000).toFixed(2)} s.`,
+            });
+        }
     });
 }

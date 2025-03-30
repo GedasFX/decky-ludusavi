@@ -31,10 +31,13 @@ The plugin should provide a log of all events in `/home/deck/homebrew/logs/Ludus
 ## Features
 
 * Ability to sync game saves or arbitrary files to the cloud.
+* Comprehensive UI to restore games. Integrated with Cloud.
 * Bi-directional sync support (Linux/Windows needs proper docs).
-* Backup stats after each sync (duration/size).
+* Backup stats after each sync (duration/size). Mutable!
 * Per-game configuration (for save locations, and if it should auto backup or not).
 * Support for unusual or non-PC game names, such as "GOTY" editions, emulation.
+* Ability to install Ludusavi dependency from Big Picture.
+* Plugin/Sync logs built in!
 
 ## Tutorials
 
