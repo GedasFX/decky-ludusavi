@@ -77,6 +77,20 @@ class Ludusavi:
             ["config", "show"],
         )
 
+    async def get_game_name_by_appid(self, appId: str):
+        return await self._run_command(
+            ["find", "--steam-id", appId]
+        )
+
+    async def update_manifest(self, force: bool = False):
+
+        argv = ["manifest", "update"]
+
+        if force:
+            argv.append("--force")
+
+        return await self._run_command(argv, None, False)
+
     async def _run_command(
         self, cmd: list[str], event: str | None = None, api_mode: bool = True
     ):

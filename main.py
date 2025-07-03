@@ -81,6 +81,14 @@ class Plugin:
         decky.logger.debug("Executing: get_ludusavi_config()")
         return await self.ludusavi.get_config()
 
+    async def get_game_name_by_appid_from_manifest(self, appId: str):
+        decky.logger.debug("Executing: get_game_name_by_appid_from_manifest('%s')", appId)
+        return await self.ludusavi.get_game_name_by_appid(appId)
+
+    async def update_manifest(self, force: bool): 
+        decky.logger.info("Executing: update_manifest('%s')", force)
+        return await self.ludusavi.update_manifest(force)
+
     # Asyncio-compatible long-running code, executed in a task when the plugin is loaded
     async def _main(self):
         self.ludusavi = Ludusavi(
