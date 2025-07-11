@@ -1,5 +1,5 @@
 import { addEventListener, call, removeEventListener } from "@decky/api";
-import { GameInfo, PersistentState } from "./state";
+import { GameInfo, PersistentState, GameNameFindResult } from "./state";
 
 export const getLudusaviVersion = () => call<[], { bin_path?: string, version: string }>("get_ludusavi_version");
 export const installLudusavi = () => asyncHandler<{ error?: unknown }>(() => call("install_ludusavi"), "install_ludusavi_complete");
@@ -22,6 +22,10 @@ export const getGameConfig = (key: string) => call<[string], GameInfo>("get_game
 export const setGameConfig = (key: string, value: GameInfo) => call<[string, GameInfo]>("set_game_config", key, value);
 
 export const getPluginLogs = () => call<[], string[]>("get_plugin_logs");
+
+export const getGameNameFormManifest = (appId: string) => call<[string], GameNameFindResult>("get_game_name_by_appid_from_manifest", appId);
+
+export const updateManifest = (force: boolean) => call<[boolean], void>("update_manifest", force);
 
 
 const asyncHandler = <TResult>(func: () => Promise<void>, event: string) => {
