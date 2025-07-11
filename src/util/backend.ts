@@ -7,6 +7,7 @@ export const installLudusavi = () => asyncHandler<{ error?: unknown }>(() => cal
 export const backup = (gameName: string) => asyncHandler<LudusaviBackupResponse>(() => call("backup_game", gameName), "backup_game_complete");
 export const restore = (gameName: string, backupId: string) => asyncHandler<LudusaviBackupResponse>(() => call("restore_game", gameName, backupId, false, true), "restore_game_complete");
 export const restorePreview = (gameName: string, backupId: string) => asyncHandler<string>(() => call("restore_game", gameName, backupId, true, false), "restore_game_complete");
+export const normalizeGameName = (gameName: string) => asyncHandler<string>(() => call("normalize_game_name", gameName), "normalize_game_name_complete");
 
 export const getGameBackups = (gameName: string) => call<[string], LudusaviBackupListResponse>("get_game_backups", gameName);
 
