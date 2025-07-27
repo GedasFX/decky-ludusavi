@@ -2,6 +2,14 @@ import { useEffect, useState } from "react";
 import { getConfig, getLudusaviVersion, setConfig, setGameConfig } from "./backend";
 import { toaster } from "@decky/api";
 
+export interface GameNameFindResult {
+  games: {
+    [key: string]: {
+      score: number
+    }
+  }
+}
+
 export interface GameInfo {
   name: string;
   alias: string;

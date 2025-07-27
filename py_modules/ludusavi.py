@@ -76,6 +76,24 @@ class Ludusavi:
         return await self._run_command(
             ["config", "show"],
         )
+    
+    async def get_normalized_game_name(self, game_name: str):
+        return await self._run_command(
+            ["find", "--normalized", game_name],
+            api_mode=False,
+        )
+
+    async def get_game_name_by_app_id(self, app_id: str):
+        return await self._run_command(
+            ["find", "--steam-id", app_id],
+        )
+
+    async def update_manifest_async(self):
+        return await self._run_command(
+            ["manifest", "update", "--force"],
+            "update_manifest_complete",
+            api_mode=False,
+        )
 
     async def _run_command(
         self, cmd: list[str], event: str | None = None, api_mode: bool = True

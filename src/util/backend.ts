@@ -1,17 +1,33 @@
 import { addEventListener, call, removeEventListener } from "@decky/api";
-import { GameInfo, PersistentState } from "./state";
+import { GameInfo, PersistentState, GameNameFindResult } from "./state";
 
-export const getLudusaviVersion = () => call<[], { bin_path?: string, version: string }>("get_ludusavi_version");
-export const installLudusavi = () => asyncHandler<{ error?: unknown }>(() => call("install_ludusavi"), "install_ludusavi_complete");
+export const getLudusaviVersion = () => call<[], { bin_path?: string; version: string }>("get_ludusavi_version");
+export const installLudusavi = () =>
+  asyncHandler<{ error?: unknown }>(() => call("install_ludusavi"), "install_ludusavi_complete");
 
-export const backup = (gameName: string) => asyncHandler<LudusaviBackupResponse>(() => call("backup_game", gameName), "backup_game_complete");
-export const restore = (gameName: string, backupId: string) => asyncHandler<LudusaviBackupResponse>(() => call("restore_game", gameName, backupId, false, true), "restore_game_complete");
-export const restorePreview = (gameName: string, backupId: string) => asyncHandler<string>(() => call("restore_game", gameName, backupId, true, false), "restore_game_complete");
+export const backup = (gameName: string) =>
+  asyncHandler<LudusaviBackupResponse>(() => call("backup_game", gameName), "backup_game_complete");
+export const restore = (gameName: string, backupId: string) =>
+  asyncHandler<LudusaviBackupResponse>(
+    () => call("restore_game", gameName, backupId, false, true),
+    "restore_game_complete"
+  );
+export const restorePreview = (gameName: string, backupId: string) =>
+  asyncHandler<string>(() => call("restore_game", gameName, backupId, true, false), "restore_game_complete");
 
-export const getGameBackups = (gameName: string) => call<[string], LudusaviBackupListResponse>("get_game_backups", gameName);
+export const getGameBackups = (gameName: string) =>
+  call<[string], LudusaviBackupListResponse>("get_game_backups", gameName);
 
-export const getGameCloudState = (gameName: string) => asyncHandler<string>(() => call("sync_game_cloud_state", gameName, 'download', true, false), "sync_game_cloud_state_complete");
-export const syncGameCloudState = (gameName: string, direction: 'upload' | 'download') => asyncHandler<string>(() => call("sync_game_cloud_state", gameName, direction, false, true), "sync_game_cloud_state_complete");
+export const getGameCloudState = (gameName: string) =>
+  asyncHandler<string>(
+    () => call("sync_game_cloud_state", gameName, "download", true, false),
+    "sync_game_cloud_state_complete"
+  );
+export const syncGameCloudState = (gameName: string, direction: "upload" | "download") =>
+  asyncHandler<string>(
+    () => call("sync_game_cloud_state", gameName, direction, false, true),
+    "sync_game_cloud_state_complete"
+  );
 
 export const getLudusaviConfig = () => call<[], LudusaviConfig>("get_ludusavi_config");
 
@@ -22,19 +38,28 @@ export const setGameConfig = (key: string, value: GameInfo) => call<[string, Gam
 
 export const getPluginLogs = () => call<[], string[]>("get_plugin_logs");
 
+export const getGameNameFromManifest = (appId: string) =>
+  call<[string], GameNameFindResult>("get_game_name_by_appid_from_manifest", appId);
+export const getNormalizedGameName = (gameName: string) => call<[string], string>("get_normalized_game_name", gameName);
+
+export const updateManifest = () =>
+  asyncHandler<void>(() => call<[], void>("update_manifest"), "update_manifest_complete");
+
+export const log = (message: string, level: "debug" | "info" | "warn" | "error" = "info") =>
+  call<[string, "info" | "warn" | "error" | "debug"], void>("log", message, level);
 
 const asyncHandler = <TResult>(func: () => Promise<void>, event: string) => {
-    return new Promise<TResult>((resolve, reject) => {
-        const listener = (r: TResult) => {
-            removeEventListener(event, listener);
-            resolve(r);
-        };
+  return new Promise<TResult>((resolve, reject) => {
+    const listener = (r: TResult) => {
+      removeEventListener(event, listener);
+      resolve(r);
+    };
 
-        addEventListener(event, listener);
+    addEventListener(event, listener);
 
-        func().catch((error) => {
-            removeEventListener(event, listener);
-            reject(error);
-        });
+    func().catch((error) => {
+      removeEventListener(event, listener);
+      reject(error);
     });
-}
+  });
+};

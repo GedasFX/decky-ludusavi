@@ -1,6 +1,6 @@
 {
   "name": "decky-ludusavi",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Ludusavi for Decky. Backup, restore, and keep multiple versions of your save files with ease! Requires Ludusavi installed on the device.",
   "type": "module",
   "scripts": {
@@ -28,7 +28,7 @@
   "homepage": "https://github.com/GedasFX/decky-ludusavi#readme",
   "devDependencies": {
     "@decky/rollup": "^1.0.1",
-    "@decky/ui": "^4.9.2",
+    "@decky/ui": "^4.10.4",
     "@types/react": "18.3.3",
     "@types/react-dom": "18.3.0",
     "@types/webpack": "^5.28.5",
