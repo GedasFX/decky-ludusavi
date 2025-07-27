@@ -3,11 +3,15 @@ import { FC } from "react";
 import DeckyStoreButton from "./DeckyStoreButton";
 import { useAppState } from "../../util/state";
 
-export const SyncButton: FC<{ title: string; callback: () => void; icon: JSX.Element }> = ({ title, callback, icon }) => {
-  const { ludusavi_enabled, syncing } = useAppState();
-
+export const SpinnerButton: FC<{
+  title: string;
+  callback: () => void;
+  icon: JSX.Element;
+  disabled?: boolean;
+  spinning?: boolean;
+}> = ({ title, callback, icon, disabled = false, spinning = false }) => {
   return (
-    <ButtonItem layout="below" disabled={!ludusavi_enabled || syncing} onClick={callback} bottomSeparator="none">
+    <ButtonItem layout="below" disabled={disabled || spinning} onClick={callback} bottomSeparator="none">
       <style>
         {`
     .dls-rotate {
@@ -25,7 +29,19 @@ export const SyncButton: FC<{ title: string; callback: () => void; icon: JSX.Ele
     }
   `}
       </style>
-      <DeckyStoreButton icon={<div className={syncing ? "dls-rotate" : ""}>{icon}</div>}>{title}</DeckyStoreButton>
+      <DeckyStoreButton icon={<div className={spinning ? "dls-rotate" : ""}>{icon}</div>}>{title}</DeckyStoreButton>
     </ButtonItem>
+  );
+};
+
+export const SyncButton: FC<{ title: string; callback: () => void; icon: JSX.Element }> = ({
+  title,
+  callback,
+  icon,
+}) => {
+  const { ludusavi_enabled, syncing } = useAppState();
+
+  return (
+    <SpinnerButton title={title} disabled={!ludusavi_enabled} spinning={syncing} icon={icon} callback={callback} />
   );
 };
