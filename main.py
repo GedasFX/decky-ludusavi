@@ -4,7 +4,7 @@ import decky  # type: ignore
 from ludusavi import Ludusavi
 import logging
 
-decky.logger.setLevel("DEBUG")
+decky.logger.setLevel("INFO")
 
 
 class Plugin:
