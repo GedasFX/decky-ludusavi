@@ -22,8 +22,6 @@ export type PersistentState = {
   auto_backup_new_games: boolean;
   auto_backup_toast_enabled: boolean;
 
-  manifest_force_update: boolean;
-
   recent_games: string[];
 }
 
@@ -35,8 +33,6 @@ export type State = {
   ludusavi_version: string;
 
   game_info?: GameInfo;
-
-  manifest_force_update: boolean;
 
   recent_games_selected?: string; // While its local state, dropdown gets unmounted when popup appears, so needs to be global state
 } & PersistentState;
@@ -51,7 +47,6 @@ class AppState {
     auto_backup_enabled: false,
     auto_backup_new_games: false,
     auto_backup_toast_enabled: false,
-    manifest_force_update: false,
     recent_games: [],
   };
 
@@ -67,7 +62,6 @@ class AppState {
     this.setState("auto_backup_enabled", await getConfig("auto_backup_enabled"));
     this.setState("auto_backup_new_games", await getConfig("auto_backup_new_games"));
     this.setState("auto_backup_toast_enabled", await getConfig("auto_backup_toast_enabled"));
-    this.setState("manifest_force_update", await getConfig("manifest_force_update"));
   }
 
   private async initializeVersion() {
