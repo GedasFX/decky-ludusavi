@@ -1,11 +1,12 @@
-import { LifetimeNotification } from "@decky/ui";
 import { onGameExit, onGameStart } from "./syncUtil";
 import PluginLogsPage from "../pages/PluginLogsPage";
+import { AppLifetimeNotification } from "@decky/ui/dist/globals/steam-client/GameSessions";
+import { Unregisterable } from "@decky/ui";
 
-const registrations: Registration[] = [];
+const registrations: Unregisterable[] = [];
 
 function registerAppLifecycleNotifications() {
-    registrations.push(SteamClient.GameSessions.RegisterForAppLifetimeNotifications(async (e: LifetimeNotification) => {
+    registrations.push(SteamClient.GameSessions.RegisterForAppLifetimeNotifications(async (e: AppLifetimeNotification) => {
         if (e.bRunning) {
             onGameStart(e.unAppID);
         } else {

@@ -13,10 +13,6 @@ declare module "*.jpg" {
   export default content;
 }
 
-interface Registration {
-  unregister: () => void;
-}
-
 interface LudusaviConfig {
   cloud: {
     remote: unknown | null;
