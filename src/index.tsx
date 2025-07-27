@@ -6,8 +6,6 @@ import appState, { useAppState } from "./util/state";
 import ConfigurationPanel from "./components/sidebar/ConfigurationPanel";
 import { GameConfigurationPanel } from "./components/sidebar/GameConfigurationPanel";
 import { registerDependencies } from "./util/registrations";
-import OtherPanel from "./components/sidebar/OtherPanel";
-import LudusaviManifestUpdatePanel from "./components/sidebar/LudusaviManifestUpdatePanel";
 
 const Content: FC = () => {
   const { ludusavi_enabled } = useAppState();
@@ -20,8 +18,6 @@ const Content: FC = () => {
     <>
       <GameConfigurationPanel />
       <ConfigurationPanel />
-      <OtherPanel />
-      <LudusaviManifestUpdatePanel />
       <LudusaviVersionPanel />
     </>
   );
