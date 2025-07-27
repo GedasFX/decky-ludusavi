@@ -97,7 +97,7 @@ class Plugin:
         level_map = {
             "debug": logging.DEBUG,
             "info": logging.INFO,
-            "warning": logging.WARNING,
+            "warn": logging.WARN,
             "error": logging.ERROR,
             "critical": logging.CRITICAL
         }

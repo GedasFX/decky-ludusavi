@@ -38,7 +38,7 @@ export const setGameConfig = (key: string, value: GameInfo) => call<[string, Gam
 
 export const getPluginLogs = () => call<[], string[]>("get_plugin_logs");
 
-export const getGameNameFormManifest = (appId: string) =>
+export const getGameNameFromManifest = (appId: string) =>
   call<[string], GameNameFindResult>("get_game_name_by_appid_from_manifest", appId);
 export const getNormalizedGameName = (gameName: string) => call<[string], string>("get_normalized_game_name", gameName);
 
