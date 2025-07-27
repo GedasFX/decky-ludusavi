@@ -70,15 +70,6 @@ class AppState {
     this.setState("manifest_force_update", await getConfig("manifest_force_update"));
   }
 
-  private async initializeManifestForceUpdate() {
-    const force = await getConfig("auto_backup_new_games");
-    if (force) {
-      this.setState("auto_backup_new_games", true);
-    } else {
-      this.setState("auto_backup_new_games", false);
-    }
-  }
-
   private async initializeVersion() {
     const version = await getLudusaviVersion();
 
