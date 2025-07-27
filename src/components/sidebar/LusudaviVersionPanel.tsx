@@ -47,7 +47,7 @@ const ManifestUpdateButton = () => {
           .then(() => {
             toaster.toast({
               title: "Decky Ludusavi",
-              body: `Ludusavi Manifest updated successful. Restarting plugin...`,
+              body: `Ludusavi Manifest updated successfully. Restarting plugin...`,
             });
             return appState.initialize();
           })
@@ -83,20 +83,22 @@ function LudusaviVersionPanelContent() {
   }
 
   if (!ludusavi_enabled) {
-    <PanelSectionRow>
-      <div
-        style={{
-          fontSize: "0.7em",
-          marginLeft: "-1em",
-          marginRight: "-3em",
-        }}
-      >
-        <div>Ludusavi not found. Plugin functionality limited.</div>
-        <div>
-          Install Ludusavi from 'Discover' in Desktop mode. If issue persists, ask for help on GitHub or Discord.
+    return (
+      <PanelSectionRow>
+        <div
+          style={{
+            fontSize: "0.7em",
+            marginLeft: "-1em",
+            marginRight: "-3em",
+          }}
+        >
+          <div>Ludusavi not found. Plugin functionality limited.</div>
+          <div>
+            Install Ludusavi from 'Discover' in Desktop mode. If issue persists, ask for help on GitHub or Discord.
+          </div>
         </div>
-      </div>
-    </PanelSectionRow>;
+      </PanelSectionRow>
+    );
   }
 
   return (

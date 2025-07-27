@@ -8,14 +8,14 @@ export const resolveGameName = async (appId: number) => {
     getGameNameFormManifest(appId.toString()),
   ]);
 
-  const manifestName = manifest.games ? Object.keys(manifest.games)[0] : "";
-  const steamGameName = launchOptions[0].strGameName;
-  const nonSteamGameName = appOverview?.display_name;
+  const manifestName = manifest.games ? Object.keys(manifest.games)[0] : undefined;
+  const steamGameName = launchOptions[0]?.strGameName as string | undefined;
+  const nonSteamGameName = appOverview?.display_name as string | undefined;
 
   await log(
-    `APP_ID ${appId}: Manifest - [${manifestName ?? ''}], Launch Options - [${launchOptions[0].strGameName ?? ''}], App Overview - [${appOverview?.display_name ?? ''}].`,
+    `APP_ID ${appId}: Manifest - [${manifestName ?? ''}], Launch Options - [${steamGameName ?? ''}], App Overview - [${nonSteamGameName ?? ''}].`,
     "info"
   );
 
-  return manifestName ?? steamGameName ?? nonSteamGameName;
+  return manifestName || steamGameName || nonSteamGameName;
 };

@@ -25,7 +25,7 @@ const AliasConfigurator: FC<{ alias: string; onChange: (alias: string) => void }
 
       toaster.toast({ title: "Ludusavi", body: "Unable to find game in manifest." });
     } catch (error) {
-      toaster.toast({ title: "Ludusavi", body: "An error occured while searching." });
+      toaster.toast({ title: "Ludusavi", body: "An error occurred while searching." });
     } finally {
       setSearching(false);
     }
