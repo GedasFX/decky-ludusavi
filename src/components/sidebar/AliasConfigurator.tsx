@@ -19,6 +19,7 @@ const AliasConfigurator: FC<{ alias: string; onChange: (alias: string) => void }
 
       if (result && !result.startsWith("No info for these games:")) {
         setStr(result.trim());
+        onChange(result.trim());
         setGameFound(true);
         return;
       }
@@ -58,7 +59,7 @@ const ConfigureAliasesModal: FC<{
   closeModal?: () => void;
   onOK: (alias: string) => void;
 }> = ({ game, closeModal, onOK }) => {
-  const [alias, setAliases] = useState(game.alias);
+  const [alias, setAlias] = useState(game.alias);
 
   return (
     <ConfirmModal strTitle="Configure Game Alias" onOK={() => onOK(alias)} closeModal={closeModal}>
@@ -74,7 +75,7 @@ const ConfigureAliasesModal: FC<{
           Configuring an alias for the game <b>{game.name}</b>.
         </div>
       </PanelSection>
-      <AliasConfigurator alias={alias} onChange={setAliases} />
+      <AliasConfigurator alias={alias} onChange={setAlias} />
     </ConfirmModal>
   );
 };
