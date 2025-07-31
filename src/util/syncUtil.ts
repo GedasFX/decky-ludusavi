@@ -16,6 +16,11 @@ export const onGameStart = async (appId: number) => {
 export const onGameExit = async (appId: number) => {
     if (appState.currentState.ludusavi_enabled && appState.currentState.auto_backup_enabled) {
         const gameName = await resolveGameName(appId);
+        if (!gameName) {
+            console.error("Ludusavi: could not resolve app", appId);
+            return;
+        }
+
         const game = await getGameConfig(gameName);
 
         if (game.autoSync) {
