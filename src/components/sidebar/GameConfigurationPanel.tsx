@@ -1,9 +1,8 @@
-import { PanelSection, PanelSectionRow, showModal, ToggleField } from "@decky/ui";
+import { DialogButton, Focusable, PanelSection, PanelSectionRow, showModal, ToggleField } from "@decky/ui";
 import { setAppState, useAppState } from "../../util/state";
 import { FC, useCallback, useEffect } from "react";
 import { getGameConfig, setGameConfig } from "../../util/backend";
 import { SelectGameDropdown } from "../dropdowns/SelectGameDropdown";
-import { SyncButton } from "../other/SyncButton";
 import { ConfigureAliasesButton } from "./AliasConfigurator";
 import { backupGame } from "../../util/syncUtil";
 import { RestoreGameModal } from "../modals/RestoreGameModal";
@@ -28,24 +27,19 @@ export const GameConfigurationPanel: FC = () => {
         </PanelSectionRow>
       </PanelSection>
       {game_info && (
-        <div
-          style={{ display: "flex", justifyContent: "space-between", paddingLeft: "1em", paddingRight: "1em", marginTop: "-1em", marginBottom: "1em" }}
-          className="dls-sync-container"
-        >
-          <style>
-            {`
-    .dls-sync-container button {
-      min-width: 0 !important;
-    }
-  `}
-          </style>
-          <PanelSectionRow>
-            <SyncButton title="Backup" callback={() => backupGame(game_info.alias)} icon={<FaUpload />} />
-          </PanelSectionRow>
-          <PanelSectionRow>
-            <SyncButton title="Restore" callback={() => showModal(<RestoreGameModal game={game_info} />)} icon={<FaDownload />} />
-          </PanelSectionRow>
-        </div>
+        <PanelSectionRow>
+          <Focusable flow-children="horizontal" style={{ display: "flex", alignItems: "center", gap: "0.5em", margin: "-1em 0 1em 0" }}>
+            <DialogButton onClick={() => backupGame(game_info.alias)} style={{ minWidth: 0, display: "flex", justifyContent: "space-around" }}>
+              <FaUpload size={16} /> Backup
+            </DialogButton>
+            <DialogButton
+              onClick={() => showModal(<RestoreGameModal game={game_info} />)}
+              style={{ minWidth: 0, display: "flex", justifyContent: "space-around" }}
+            >
+              <FaDownload size={16} /> Restore
+            </DialogButton>
+          </Focusable>
+        </PanelSectionRow>
       )}
       {game_info && (
         <>
